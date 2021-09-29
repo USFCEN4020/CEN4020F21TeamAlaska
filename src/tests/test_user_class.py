@@ -181,7 +181,7 @@ class TestRegisterLogin:
 
 class TestJobPosting():
     page = src.user_class.Page()
-    page.username = "General Kenobi The Negotiator"
+    page.user.username = "General Kenobi The Negotiator"
     db_name = "testing.sqlite3"
     db = src.database_access.database_access(db_name)
     src.user_class.db = db
