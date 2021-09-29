@@ -2,6 +2,7 @@ from enum import Enum
 import enum
 import re
 from src.database_access import database_access as Database
+from src.User import User
 db = Database("InCollege.sqlite3")
 
 
@@ -15,16 +16,14 @@ class PostedJob():
         location = location
         salary = salary
 
-# each page will "render" the appropriate "form" or prompt
+
 class Page:
+    # each page will "render" the appropriate "form" or prompt
     def __init__(self):
-        #current login info
-        self.username = ""
-        self.password = ""
+        # current login info
+        self.user = User("", "", "", "", False)
         # stack is to implement the navigation functionality
         self.page_stack = []
-        # To control the view
-        self.authorized = False
         # Numbered pages so they're easily added to the stack and then called
         self.index = {
             0: {
@@ -50,69 +49,67 @@ class Page:
             }
         }
 
-    def authorize(self):
-        self.authorized = True
-    
     def home_page(self):
         self.page_stack.append(0)
         # I want the home page to view different option depending on whether or not the user is authenticated
-        if not self.authorized:
+        if not self.user.authorized:
             c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\nEnter a choice: "))
             if c == 1:
                 self.play_video()
-            if c ==2:
+            if c == 2:
                 self.find_people()
             if c == 3:
                 self.register_page()
             if c == 4:
                 self.login_page()
         else:
-            c = int(input("1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\nEnter a choice: "))
+            c = int(input(
+                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\nEnter a choice: "))
             if c == 1:
                 self.post_job_page()
             if c == 2:
                 self.find_people()
             if c == 3:
                 self.skills_page()
-    
+
     def play_video(self):
         self.page_stack.append(1)
         print("Video is now playing...")
         # back_option prompts the user to enter 0 if they wanna go back
         self.back_option()
-    
+
     def login_page(self):
         self.page_stack.append(4)
         res = self.login()
         if res:
-            self.authorize()
+            self.user.authorize()
         # Once the user logs in, they get redirected to the home page
         self.home_page()
 
-    
     def register_page(self):
         self.page_stack.append(3)
         res = self.register()
         if res:
             # the user is now authenticated, they'll view things slightly different
-            self.authorize()
+            self.user.authorize()
         # Once the user logs in, they get redirected to the home page
         self.home_page()
-
 
     def find_people(self):
         self.page_stack.append(2)
         fname = input("Enter your friend's firstname: ")
         lname = input("Enter your friend's lastname: ")
-        find_friend = ('SELECT * FROM users WHERE firstname = ? AND lastname = ?')
+        find_friend = (
+            'SELECT * FROM users WHERE firstname = ? AND lastname = ?')
         # the friend input is searched for in the db
         res = db.execute(find_friend, (fname, lname))
         # if the friend exits in our database
         if res:
             print("They are a part of the InCollege system")
             # if the user hasn't logged in, they'll view the below options
-            if not self.authorized:
-                c = int(input("Would you like to join?\n1-Regiser\n2-Login\n0 - To go back: "))
+            if not self.user.authorized:
+                c = int(
+                    input("Would you like to join?\n1-Regiser\n2-Login\n0 - To go back: "))
                 if c == 1:
                     self.register_page()
                 elif c == 2:
@@ -126,46 +123,49 @@ class Page:
 
     # function to post a job to the database, returns true if successful, false otherwise
     def postjob(self):
-        #check if there are more than 5 jobs
+        # check if there are more than 5 jobs
         numjobs = len(db.execute('SELECT * FROM jobs'))
         if(numjobs >= 5):
             print("There are already 5 jobs. Please try again later\n")
             return False
-        
+
         else:
             temp = PostedJob
-            temp.name = self.username
+            temp.name = self.user.username
             temp.title = input("Please enter the job's title: ")
             temp.description = input("Please enter a description of the job: ")
             temp.employer = input("Who is the employer of the job? ")
             temp.location = input("Where is this job located? ")
             while True:
                 try:
-                    temp.salary = float(input("Please estimate the salary of the job (only numbers): "))
+                    temp.salary = float(
+                        input("Please estimate the salary of the job (only numbers): "))
                     break
                 except Exception:
                     print("Not a valid number. Try again.")
-            
-            #insert object member values into database
-            db.execute('INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?)', [temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
-            
+
+            # insert object member values into database
+            db.execute('INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?)', [
+                       temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
+
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
 
     def post_job_page(self):
         self.page_stack.append(5)
-        if self.authorized:
+        if self.user.authorized:
             self.postjob()
             # this is to go back a level
             self.back_option()
 
     def skills_page(self):
         self.page_stack.append(6)
-        skill = input('\n1 - JavaScript\n2 - Python\n3 - SQL Sever\n4 - MongoDB\n5 - Design Patterns\nEnter a choice: ')
+        skill = input(
+            '\n1 - JavaScript\n2 - Python\n3 - SQL Sever\n4 - MongoDB\n5 - Design Patterns\nEnter a choice: ')
         if skill:
             print('under construction')
         self.back_option()
-    
+
     # goes up a level to the previous page
     def back_page(self):
         # call the function for the previous page
@@ -177,7 +177,7 @@ class Page:
         c = input("0 - To go back: ")
         if c == '0':
             self.back_page()
-    
+
     ################ OLD FUNCTIONS ##############
     def get_credentials(self, register: False):
         # returns the credentials. Called either in login() or register()
@@ -188,14 +188,17 @@ class Page:
             lastname = input("Enter last name: ")
             return (user, password, firstname, lastname)
         return (user, password)
-    
+
     def login(self):
         while True:
             cred = self.get_credentials(False)
             # checks if the credentials exist in the users table
-            find_user = ('SELECT * FROM users WHERE username = ? AND password = ?')
+            find_user = (
+                'SELECT * FROM users WHERE username = ? AND password = ?')
             res = db.execute(find_user, cred)
             if res:
+                res = res[0]
+                self.user = User(res[0], res[1], res[2], res[3], True)
                 print('You have successfully logged in\n')
                 return True
             else:
@@ -215,13 +218,15 @@ class Page:
             if satisfies:
                 # posting data to the database
                 db.execute("INSERT INTO users VALUES (?, ?, ?, ?)", cred)
-                print("An account for " + cred[0] + " was registered successfully")
+                print("An account for " +
+                      cred[0] + " was registered successfully")
+                self.user = User(cred[0], cred[1], cred[2], cred[3], True)
                 return True
             else:
                 print('Weak Password')
                 return False
-    
-    def is_password_secure(self,pw):
+
+    def is_password_secure(self, pw):
         reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%^()*#?&])[A-Za-z\d@$!#%^()*?&]{8,12}$"
         pattern = re.compile(reg)
         res = re.match(pattern, pw)
