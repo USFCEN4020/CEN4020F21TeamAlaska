@@ -21,7 +21,7 @@ class Page:
     # each page will "render" the appropriate "form" or prompt
     def __init__(self):
         # current login info
-        self.user = User("", "", "", "", False)
+        self.user = User("", "", "", "", False, True, True, True)
         # stack is to implement the navigation functionality
         self.page_stack = []
         # Numbered pages so they're easily added to the stack and then called
@@ -214,8 +214,8 @@ class Page:
             satisfies = self.is_password_secure(cred[1])
             if satisfies:
                 # posting data to the database
-                db.execute("INSERT INTO users VALUES (?, ?, ?, ?)",
-                           cred + (True*3))
+                db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)",
+                           cred + (True, True, True))
                 print("An account for " +
                       cred[0] + " was registered successfully")
                 self.user = User(cred[0], cred[1], cred[2],
