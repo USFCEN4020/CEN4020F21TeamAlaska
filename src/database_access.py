@@ -10,7 +10,10 @@ class database_access:
             username text PRIMARY KEY,
             password text NOT NULL,
             firstname TEXT NOT NULL,
-            lastname TEXT NOT NULL
+            lastname TEXT NOT NULL,
+            email_notification BOOLEAN NOT NULL,
+            sms_notification BOOLEAN NOT NULL,
+            ad_notification BOOLEAN NOT NULL
         )
     '''
         sql_create_jobs_table = ''' CREATE TABLE IF NOT EXISTS jobs (
