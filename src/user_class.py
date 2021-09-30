@@ -63,7 +63,7 @@ class Page:
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
             c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
-            "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - Important Links\nEnter a choice: "))
+            "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\nEnter a choice: "))
             if c == 1:
                 self.play_video_page()
             if c == 2:
@@ -78,7 +78,7 @@ class Page:
                 self.important_links_page()
         else:
             c = int(input(
-                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - Important LinksEnter a choice: "))
+                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\nEnter a choice: "))
             if c == 1:
                 self.post_job_page()
             if c == 2:
@@ -93,7 +93,8 @@ class Page:
     def useful_links_page(self):
         self.page_stack.append(7)
         # select from links
-        choice = int(input("1 - General\n2 - Browse InCollege\n3 - Business Solutions\n4 - Directories\n5 - Previous PageEnter a choice: "))
+        choice = int(input("1 - General\n2 - Browse InCollege\n3 - Business Solutions\n4 - Directories\n5 - Previous Page\nEnter a choice: "))
+        
         # general
         if choice == 1:
             self.general_page()
@@ -121,12 +122,13 @@ class Page:
         
         #previous page
         if choice == 5:
-            self.back_page()
+            self.back_option()
          
     def general_page(self):
         self.page_stack.append(8)
         # select from links under the general page 
         choice = int(input("1 - Sign Up\n2 - Help Center\n3 - About\n4 - Press\n5 - Blog\n6 - Careers\n7 - Developers\n8 - Previous Page\nEnter a choice: "))
+        
         # sign up/log in
         if choice == 1:
             logORreg = int(input("Do you already have an account?\n1 - Yes\n2 - No\nEnter a choice: "))
@@ -177,6 +179,57 @@ class Page:
 
     def important_links_page(self):
         self.page_stack.append(9)
+        choice = int(input("1 - Copyright Notice\n2 - About\n3 - Accessibility\n4 - User Agreement\n5 - Privacy Policy"
+        "\n6 - Cookie Policy\n7 - Copyright Policy\n8 - Brand Policy\n9 - Languages\nEnter a choice: "))
+        
+        # copyright notice
+        if choice == 1:
+            # content made by daniel
+            self.back_option()
+        
+        # about
+        if choice == 2:
+            # content made by daniel
+            self.back_option()
+        
+        # accessibility
+        if choice == 3:
+            # content made by daniel
+            self.back_option()
+        
+        # user agreement
+        if choice == 4:
+            # content made by daniel
+            self.back_option()
+        
+        # privacy policy
+        if choice == 5:
+            # content made by daniel
+            # guest controls is also placed inside privacy policy for some reason
+            guestcontrol = int(input("1 - Guest Controls\nEnter a choice: "))
+            if guestcontrol == 1:
+                # content made by daniel
+                self.back_option()
+        
+        # cookie policy
+        if choice == 6:
+            # content made by daniel
+            self.back_option()
+    
+        # copyright policy
+        if choice == 7:
+            # content made by daniel
+            self.back_option()
+        
+        # brand policy
+        if choice == 8:
+            # content made by daniel
+            self.back_option()
+        
+        # languages
+        if choice == 9:
+            # content made by daniel
+            self.back_option()
 
 
     def play_video_page(self):
