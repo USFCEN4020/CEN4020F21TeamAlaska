@@ -52,3 +52,12 @@ def get_user_by_login(username: str, password: str, db: Database) -> User:
         return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], True, db)
     else:
         return None
+
+
+# Creates a user in the databsae
+# credentials: [username, password, firstname, lastname]
+def create_user(credentials: list, db: Database) -> User:
+    db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)",
+               credentials + (True, True, True))
+    return User(credentials[0], credentials[1], credentials[2],
+                credentials[3], True, True, True, True, db)

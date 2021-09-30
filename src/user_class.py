@@ -214,12 +214,9 @@ class Page:
             satisfies = self.is_password_secure(cred[1])
             if satisfies:
                 # posting data to the database
-                db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)",
-                           cred + (True, True, True))
+                self.user = create_user(cred, db)
                 print("An account for " +
                       cred[0] + " was registered successfully")
-                self.user = User(cred[0], cred[1], cred[2],
-                                 cred[3], True, True, True, True, db)
                 return True
             else:
                 print('Weak Password')
