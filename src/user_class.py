@@ -21,7 +21,7 @@ class Page:
     # each page will "render" the appropriate "form" or prompt
     def __init__(self):
         # current login info
-        self.user = User("", "", "", "", False, True, True, True)
+        self.user = User("", "", "", "", False, True, True, True, db)
         # stack is to implement the navigation functionality
         self.page_stack = []
         # Numbered pages so they're easily added to the stack and then called
@@ -193,7 +193,7 @@ class Page:
         while True:
             cred = self.get_credentials(False)
             # checks if the credentials exist in the users table
-            user = get_user_by_login(cred[0], cred[1])
+            user = get_user_by_login(cred[0], cred[1], db)
             if user:
                 self.user = user
                 print('You have successfully logged in\n')
@@ -219,7 +219,7 @@ class Page:
                 print("An account for " +
                       cred[0] + " was registered successfully")
                 self.user = User(cred[0], cred[1], cred[2],
-                                 cred[3], True, True, True, True)
+                                 cred[3], True, True, True, True, db)
                 return True
             else:
                 print('Weak Password')
