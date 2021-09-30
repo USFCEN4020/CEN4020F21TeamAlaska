@@ -2,7 +2,7 @@ from enum import Enum
 import enum
 import re
 from src.database_access import database_access as Database
-from src.User import User
+from src.User import *
 db = Database("InCollege.sqlite3")
 
 
@@ -193,12 +193,9 @@ class Page:
         while True:
             cred = self.get_credentials(False)
             # checks if the credentials exist in the users table
-            find_user = (
-                'SELECT * FROM users WHERE username = ? AND password = ?')
-            res = db.execute(find_user, cred)
-            if res:
-                res = res[0]
-                self.user = User(res[0], res[1], res[2], res[3], True)
+            user = get_user_by_login(cred[0], cred[1])
+            if user:
+                self.user = user
                 print('You have successfully logged in\n')
                 return True
             else:
@@ -217,10 +214,12 @@ class Page:
             satisfies = self.is_password_secure(cred[1])
             if satisfies:
                 # posting data to the database
-                db.execute("INSERT INTO users VALUES (?, ?, ?, ?)", cred)
+                db.execute("INSERT INTO users VALUES (?, ?, ?, ?)",
+                           cred + (True*3))
                 print("An account for " +
                       cred[0] + " was registered successfully")
-                self.user = User(cred[0], cred[1], cred[2], cred[3], True)
+                self.user = User(cred[0], cred[1], cred[2],
+                                 cred[3], True, True, True, True)
                 return True
             else:
                 print('Weak Password')
