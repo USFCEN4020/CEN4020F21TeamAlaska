@@ -24,6 +24,11 @@ class User:
         self.db = db
         self.authorized = authorized  # To control the view
 
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.username == other.username and self.password == other.password and self.firstname == other.firstname and self.lastname == other.lastname and self.email_notification == other.email_notification and self.sms_notification == other.sms_notification and self.ad_notification == other.ad_notification and self.authorized == other.authorized
+        return False
+
     def authorize(self):
         self.authorized = True
 
@@ -33,12 +38,12 @@ class User:
         self.db.execute(sql, [email_notification, self.username])
 
     def set_sms_notification(self, sms_notification: bool):
-        self.sms_notification
+        self.sms_notification = sms_notification
         sql = 'UPDATE users SET sms_notification = ? WHERE username = ?'
         self.db.execute(sql, [sms_notification, self.username])
 
     def set_ad_notification(self, ad_notification: bool):
-        self.ad_notification
+        self.ad_notification = ad_notification
         sql = 'UPDATE users SET ad_notification = ? WHERE username = ?'
         self.db.execute(sql, [ad_notification, self.username])
 
@@ -56,7 +61,7 @@ def get_user_by_login(username: str, password: str, db: Database) -> User:
 
 # Creates a user in the databsae
 # credentials: [username, password, firstname, lastname]
-def create_user(credentials: list, db: Database) -> User:
+def create_user(credentials: tuple, db: Database) -> User:
     db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)",
                credentials + (True, True, True))
     return User(credentials[0], credentials[1], credentials[2],
