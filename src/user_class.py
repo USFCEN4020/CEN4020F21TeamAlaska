@@ -30,10 +30,10 @@ class Page:
                 "view": self.home_page
             },
             1: {
-                "view": self.play_video
+                "view": self.play_video_page
             },
             2: {
-                "view": self.find_people
+                "view": self.find_people_page
             },
             3: {
                 "view": self.register_page
@@ -46,6 +46,12 @@ class Page:
             },
             6: {
                 "view": self.skills_page
+            },
+            7: {
+                "view": self.useful_links_page
+            },
+            8: {
+                "view": self.general_page
             }
         }
 
@@ -53,26 +59,118 @@ class Page:
         self.page_stack.append(0)
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
-            c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\nEnter a choice: "))
+            c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
+            "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\nEnter a choice: "))
             if c == 1:
-                self.play_video()
+                self.play_video_page()
             if c == 2:
-                self.find_people()
+                self.find_people_page()
             if c == 3:
                 self.register_page()
             if c == 4:
                 self.login_page()
+            if c == 5:
+                self.useful_links_page()
         else:
             c = int(input(
                 "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\nEnter a choice: "))
             if c == 1:
                 self.post_job_page()
             if c == 2:
-                self.find_people()
+                self.find_people_page()
             if c == 3:
                 self.skills_page()
+            if c == 4:
+                self.useful_links_page()
 
-    def play_video(self):
+    def useful_links_page(self):
+        self.page_stack.append(7)
+        # select from links
+        choice = int(input("1 - General\n2 - Browse InCollege\n3 - Business Solutions\n4 - Directories\n5 - Previous PageEnter a choice: "))
+        # general
+        if choice == 1:
+            self.general_page()
+        
+        # browse incollege
+        if choice == 2:
+            # FUNCTION TO BE ADDED IN FUTURE EPICS
+            # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
+            print("Under construction")
+            self.back_option()
+        
+        # business solutions
+        if choice == 3:
+            # FUNCTION TO BE ADDED IN FUTURE EPICS
+            # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
+            print("Under construction")
+            self.back_option()
+        
+        # directories
+        if choice == 4:
+            # FUNCTION TO BE ADDED IN FUTURE EPICS
+            # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
+            print("Under construction")
+            self.back_option()
+        
+        #previous page
+        if choice == 5:
+            self.back_page()
+        
+        
+    def general_page(self):
+        self.page_stack.append(8)
+        # select from links under the general page 
+        choice = int(input("1 - Sign Up\n2 - Help Center\n3 - About\n4 - Press\n5 - Blog\n6 - Careers\n7 - Developers\n8 - Previous Page\nEnter a choice: "))
+        # sign up/log in
+        if choice == 1:
+            logORreg = int(input("Do you already have an account?\n1 - Yes\n2 - No\nEnter a choice: "))
+            if logORreg == 1:
+                self.login_page()
+            if logORreg == 2:
+                self.register_page()
+        
+        # help center
+        if choice == 2:
+            print("We're here to help")
+            self.back_option()
+        
+        # about
+        if choice == 3:
+            print("In College: Welcome to In College, the world's largest college student network with many users in many countries and territories worldwide")
+            self.back_option()
+        
+        # press
+        if choice == 4:
+            print("In College Pressroom: Stay on top of the latest news, updates, and reports")
+            self.back_option()
+        
+        # blog
+        if choice == 5:
+            # FUNCTION TO BE ADDED IN FUTURE EPICS
+            # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
+            print("Under construction")
+            self.back_option()
+        
+        # careers
+        if choice == 6:
+            # FUNCTION TO BE ADDED IN FUTURE EPICS
+            # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
+            print("Under construction")
+            self.back_option()
+        
+        # developers
+        if choice == 7:
+            # FUNCTION TO BE ADDED IN FUTURE EPICS
+            # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
+            print("Under construction")
+            self.back_option()
+        
+        # previous page
+        if choice == 8:
+            self.back_option()
+
+
+    def play_video_page(self):
         self.page_stack.append(1)
         print("Video is now playing...")
         # back_option prompts the user to enter 0 if they wanna go back
@@ -95,7 +193,7 @@ class Page:
         # Once the user logs in, they get redirected to the home page
         self.home_page()
 
-    def find_people(self):
+    def find_people_page(self):
         self.page_stack.append(2)
         fname = input("Enter your friend's firstname: ")
         lname = input("Enter your friend's lastname: ")
