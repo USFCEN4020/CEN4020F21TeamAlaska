@@ -52,6 +52,9 @@ class Page:
             },
             8: {
                 "view": self.general_page
+            },
+            9: {
+                "view": self.important_links_page
             }
         }
 
@@ -60,7 +63,7 @@ class Page:
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
             c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
-            "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\nEnter a choice: "))
+            "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - Important Links\nEnter a choice: "))
             if c == 1:
                 self.play_video_page()
             if c == 2:
@@ -71,9 +74,11 @@ class Page:
                 self.login_page()
             if c == 5:
                 self.useful_links_page()
+            if c == 6:
+                self.important_links_page()
         else:
             c = int(input(
-                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\nEnter a choice: "))
+                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - Important LinksEnter a choice: "))
             if c == 1:
                 self.post_job_page()
             if c == 2:
@@ -82,6 +87,8 @@ class Page:
                 self.skills_page()
             if c == 4:
                 self.useful_links_page()
+            if c == 5:
+                self.important_links_page()
 
     def useful_links_page(self):
         self.page_stack.append(7)
@@ -115,8 +122,7 @@ class Page:
         #previous page
         if choice == 5:
             self.back_page()
-        
-        
+         
     def general_page(self):
         self.page_stack.append(8)
         # select from links under the general page 
@@ -168,6 +174,9 @@ class Page:
         # previous page
         if choice == 8:
             self.back_option()
+
+    def important_links_page(self):
+        self.page_stack.append(9)
 
 
     def play_video_page(self):
