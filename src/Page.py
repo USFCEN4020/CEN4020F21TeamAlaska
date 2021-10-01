@@ -111,7 +111,7 @@ class Page:
         
         #previous page
         if choice == 5:
-            self.back_option()
+            self.back_page()
          
     def general_page(self):
         self.page_stack.append(8)
