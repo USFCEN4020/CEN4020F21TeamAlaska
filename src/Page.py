@@ -44,6 +44,18 @@ class Page:
             },
             9: {
                 "view": self.important_links_page
+            },
+            10: {
+                "view": self.privacy_page
+            },
+            11: {
+                "view": self.guest_controls_page
+            },
+            12: {
+                "view": self.language_page
+            },
+            13: {
+                "view": self.option_switch_page
             }
         }
 
@@ -52,7 +64,7 @@ class Page:
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
             c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
-            "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\nEnter a choice: "))
+                          "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\nEnter a choice: "))
             if c == 1:
                 self.play_video_page()
             if c == 2:
@@ -82,86 +94,90 @@ class Page:
     def useful_links_page(self):
         self.page_stack.append(7)
         # select from links
-        choice = int(input("1 - General\n2 - Browse InCollege\n3 - Business Solutions\n4 - Directories\n5 - Previous Page\nEnter a choice: "))
-        
+        choice = int(input(
+            "1 - General\n2 - Browse InCollege\n3 - Business Solutions\n4 - Directories\n5 - Previous Page\nEnter a choice: "))
+
         # general
         if choice == 1:
             self.general_page()
-        
+
         # browse incollege
         if choice == 2:
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
             self.back_option()
-        
+
         # business solutions
         if choice == 3:
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
             self.back_option()
-        
+
         # directories
         if choice == 4:
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
             self.back_option()
-        
-        #previous page
+
+        # previous page
         if choice == 5:
-            self.back_option()
-         
+            self.back_page()
+
     def general_page(self):
         self.page_stack.append(8)
-        # select from links under the general page 
-        choice = int(input("1 - Sign Up\n2 - Help Center\n3 - About\n4 - Press\n5 - Blog\n6 - Careers\n7 - Developers\n8 - Previous Page\nEnter a choice: "))
-        
+        # select from links under the general page
+        choice = int(input(
+            "1 - Sign Up\n2 - Help Center\n3 - About\n4 - Press\n5 - Blog\n6 - Careers\n7 - Developers\n8 - Previous Page\nEnter a choice: "))
+
         # sign up/log in
         if choice == 1:
-            logORreg = int(input("Do you already have an account?\n1 - Yes\n2 - No\nEnter a choice: "))
+            logORreg = int(
+                input("Do you already have an account?\n1 - Yes\n2 - No\nEnter a choice: "))
             if logORreg == 1:
                 self.login_page()
             if logORreg == 2:
                 self.register_page()
-        
+
         # help center
         if choice == 2:
             print("We're here to help")
             self.back_option()
-        
+
         # about
         if choice == 3:
             print("In College: Welcome to In College, the world's largest college student network with many users in many countries and territories worldwide")
             self.back_option()
-        
+
         # press
         if choice == 4:
-            print("In College Pressroom: Stay on top of the latest news, updates, and reports")
+            print(
+                "In College Pressroom: Stay on top of the latest news, updates, and reports")
             self.back_option()
-        
+
         # blog
         if choice == 5:
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
             self.back_option()
-        
+
         # careers
         if choice == 6:
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
             self.back_option()
-        
+
         # developers
         if choice == 7:
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
             self.back_option()
-        
+
         # previous page
         if choice == 8:
             self.back_option()
@@ -169,57 +185,65 @@ class Page:
     def important_links_page(self):
         self.page_stack.append(9)
         choice = int(input("1 - Copyright Notice\n2 - About\n3 - Accessibility\n4 - User Agreement\n5 - Privacy Policy"
-        "\n6 - Cookie Policy\n7 - Copyright Policy\n8 - Brand Policy\n9 - Languages\nEnter a choice: "))
-        
+                           "\n6 - Cookie Policy\n7 - Copyright Policy\n8 - Brand Policy\n9 - Languages\n10 - Previous Page\nEnter a choice: "))
+
         # copyright notice
         if choice == 1:
-            # content made by daniel
-            self.back_option()
-        
-        # about
-        if choice == 2:
-            # content made by daniel
-            self.back_option()
-        
-        # accessibility
-        if choice == 3:
-            # content made by daniel
-            self.back_option()
-        
-        # user agreement
-        if choice == 4:
-            # content made by daniel
-            self.back_option()
-        
-        # privacy policy
-        if choice == 5:
-            # content made by daniel
-            # guest controls is also placed inside privacy policy for some reason
-            guestcontrol = int(input("1 - Guest Controls\nEnter a choice: "))
-            if guestcontrol == 1:
-                # content made by daniel
-                self.back_option()
-        
-        # cookie policy
-        if choice == 6:
-            # content made by daniel
-            self.back_option()
-    
-        # copyright policy
-        if choice == 7:
-            # content made by daniel
-            self.back_option()
-        
-        # brand policy
-        if choice == 8:
-            # content made by daniel
-            self.back_option()
-        
-        # languages
-        if choice == 9:
-            # content made by daniel
+            self.page_stack.append(-1)
+            print("(c) 2021 InCollege. All rights reserved")
             self.back_option()
 
+        # about
+        if choice == 2:
+            self.page_stack.append(-1)
+            print("InCollege is an application designed to allow college students to search and apply for jobs and connect with other students.")
+            self.back_option()
+
+        # accessibility
+        if choice == 3:
+            self.page_stack.append(-1)
+            print("Here at InCollege we continue to develop our user experience. Keep an eye out for new accessibility features in the future.")
+            self.back_option()
+
+        # user agreement
+        if choice == 4:
+            self.page_stack.append(-1)
+            print(
+                "As a user of InCollege you give us the right to use any and all of your data for free.")
+            self.back_option()
+
+        # privacy policy
+        if choice == 5:
+            self.page_stack.append(10)
+            self.privacy_page()
+
+        # cookie policy
+        if choice == 6:
+            self.page_stack.append(-1)
+            print("At the moment InCollege does not collect cookies.")
+            self.back_option()
+
+        # copyright policy
+        if choice == 7:
+            self.page_stack.append(-1)
+            print("No image or information from this site may be reproduced or copied without written permission from the InCollege legal team.")
+            self.back_option()
+
+        # brand policy
+        if choice == 8:
+            self.page_stack.append(-1)
+            print(
+                "Our brand aims to bring the best talent to the workforce by connecting people.")
+            self.back_option()
+
+        # languages
+        if choice == 9:
+            self.page_stack.append(12)
+            self.language_page()
+
+        # Previous Page
+        if choice == 10:
+            self.back_page()
 
     def play_video_page(self):
         self.page_stack.append(1)
@@ -314,6 +338,73 @@ class Page:
         if skill:
             print('under construction')
         self.back_option()
+
+    def language_page(self):
+        print("Select a language:")
+        language = input(
+            '1 - English\n2 - Spanish\n3 - Previous Page\nEnter a choice: ')
+        # Previous Page
+        if language == '3':
+            self.back_page()
+        # Try to set language until valid input is entered
+        try:
+            self.user.set_language(language)
+            print("Language set.\n")
+        except ValueError as e:
+            print("{} Please try again.".format(e))
+            self.language_page()
+
+    def option_switch_page(self) -> bool or None:
+        switch = input("1 - On\n2 - Off\n3 - Previous Page\nEnter Choice: ")
+        if switch == '1':
+            return True
+        elif switch == '2':
+            return False
+        else:
+            return None
+
+    def privacy_page(self):
+        print("Here at InCollege we do not guarantee the security of your data.")
+        privacy_option = int(
+            input("1 - Guest Controls\n2 - Previous Page\nEnter a choice: "))
+        # gues control
+        if privacy_option == 1:
+            self.page_stack.append(11)
+            self.guest_controls_page()
+        # Previous Page
+        elif privacy_option == 2:
+            self.back_page()
+
+    def guest_controls_page(self):
+        option = input(
+            '\n1 - Email Notifications\n2 - SMS notifications\n3 - tareted ads\n4 - Previous Page\nEnter a choice: ')
+        # Email notifications
+        if option == '1':
+            self.page_stack.append(13)
+            switch = self.option_switch_page()
+            if switch:
+                self.user.set_email_notification(switch)
+            else:
+                self.back_page()
+        # sms notifications
+        elif option == '2':
+            self.page_stack.append(13)
+            switch = self.option_switch_page()
+            if switch:
+                self.user.set_sms_notification(switch)
+            else:
+                self.back_page()
+        # targeted ads
+        elif option == '3':
+            self.page_stack.append(13)
+            switch = self.option_switch_page()
+            if switch:
+                self.user.set_ad_notification(switch)
+            else:
+                self.back_page()
+        # previous page
+        elif option == '4':
+            self.back_page()
 
     # goes up a level to the previous page
     def back_page(self):
