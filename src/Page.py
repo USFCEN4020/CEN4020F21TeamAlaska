@@ -326,8 +326,10 @@ class Page:
     def language_page(self):
         print("Select a language:")
         language = input('1 - English\n2 - Spanish\n3 - Previous Page\nEnter a choice: ')
+        # Previous Page
         if language == '3':
             self.back_page()
+        # Try to set language until valid input is entered
         try:
             self.user.set_language(language)
             print("Language set.\n")
@@ -345,15 +347,18 @@ class Page:
             return None
             
     def privacy_page(self):
-        guestcontrol = int(input("1 - Guest Controls\n2 - Previous Page\nEnter a choice: "))
-        if guestcontrol == 1:
+        privacy_option = int(input("1 - Guest Controls\n2 - Previous Page\nEnter a choice: "))
+        # gues control
+        if privacy_option == 1:
             self.page_stack.append(11)
             self.guest_controls_page()
-        elif guestcontrol == 2:
+        # Previous Page
+        elif privacy_option == 2:
             self.back_page()
 
     def guest_controls_page(self):
         option = input('\n1 - Email Notifications\n2 - SMS notifications\n3 - tareted ads\n4 - Previous Page\nEnter a choice: ')
+        # Email notifications
         if option == '1':
             self.page_stack.append(13)
             switch = self.option_switch_page()
@@ -361,6 +366,7 @@ class Page:
                 self.user.set_email_notification(switch)
             else:
                 self.back_page()
+        # sms notifications
         elif option == '2':
             self.page_stack.append(13)
             switch = self.option_switch_page()
@@ -368,6 +374,7 @@ class Page:
                 self.user.set_sms_notification(switch)
             else:
                 self.back_page()
+        # targeted ads
         elif option == '3':
             self.page_stack.append(13)
             switch = self.option_switch_page()
@@ -375,6 +382,7 @@ class Page:
                 self.user.set_ad_notification(switch)
             else:
                 self.back_page()
+        # previous page
         elif option == '4':
             self.back_page()
 
