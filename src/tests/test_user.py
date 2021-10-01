@@ -2,6 +2,8 @@ import pytest
 from src.User import *
 
 
+# To use db instance, pass data as a parameter to the test
+# then you can use the data dictionary inside your test
 @pytest.fixture(scope='module')
 def data():
     # Setup
@@ -9,14 +11,14 @@ def data():
     db = Database(db_name)
     # in case an error breaks the code before the Teardown is reached.
     db.delete_users_table()
-
+    # Initializes a user object in the db before any test runs
     credentials = ("darvelo", "password1!", "daniel", "arvelo")
     user = create_user(credentials, db)
 
     data = {"user": user, "db": db}
     yield data
 
-    # Teardown
+    # Deletes user from db after all tests run
     db.delete_users_table()
     db.close()
 
@@ -62,9 +64,11 @@ def test_set_email_notification(data):
     user = data["user"]
     assert user.email_notification == True
 
+    # test object changed
     user.set_email_notification(False)
     assert user.email_notification == False
 
+    # test database changed
     email_notification = data["db"].execute(sql, [user.username])[0][0]
     assert email_notification == False
 
