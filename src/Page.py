@@ -220,7 +220,6 @@ class Page:
             # content made by daniel
             self.page_stack.append(9)
             self.language_page()
-            self.back_option()
 
 
     def play_video_page(self):
