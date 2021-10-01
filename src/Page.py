@@ -207,7 +207,6 @@ class Page:
         if choice == 5:
             self.page_stack.append(10)
             self.privacy_page()
-            self.back_page()
         
         # cookie policy
         if choice == 6:
@@ -228,7 +227,6 @@ class Page:
         if choice == 9:
             self.page_stack.append(12)
             self.language_page()
-            self.back_page()
 
 
     def play_video_page(self):
