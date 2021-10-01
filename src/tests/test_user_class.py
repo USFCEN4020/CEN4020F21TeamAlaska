@@ -166,11 +166,16 @@ class TestRegisterLogin:
         self.db.print_users()
         src.database_access.print = print
         assert output == [
-            ('randion', 'Password#1', 'Robby', 'Ybbor', True, True, True),
-            ('randion0', 'Password#10', 'Robby0', 'Ybbor0', True, True, True),
-            ('randion1', 'Password#11', 'Robby1', 'Ybbor1', True, True, True),
-            ('randion2', 'Password#12', 'Robby2', 'Ybbor2', True, True, True),
-            ('randion3', 'Password#13', 'Robby3', 'Ybbor3', True, True, True)
+            ('randion', 'Password#1', 'Robby',
+             'Ybbor', 'english', True, True, True),
+            ('randion0', 'Password#10', 'Robby0',
+             'Ybbor0', 'english', True, True, True),
+            ('randion1', 'Password#11', 'Robby1',
+             'Ybbor1', 'english', True, True, True),
+            ('randion2', 'Password#12', 'Robby2',
+             'Ybbor2', 'english', True, True, True),
+            ('randion3', 'Password#13', 'Robby3',
+             'Ybbor3', 'english', True, True, True)
         ]
 
     def testCleanUp(self):  # Teardown
