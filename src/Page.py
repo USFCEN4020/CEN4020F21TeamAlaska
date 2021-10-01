@@ -218,6 +218,8 @@ class Page:
         # languages
         if choice == 9:
             # content made by daniel
+            self.page_stack.append(9)
+            self.language_page()
             self.back_option()
 
 
@@ -314,6 +316,18 @@ class Page:
         if skill:
             print('under construction')
         self.back_option()
+
+    def language_page(self):
+        print("Select a language:")
+        language = int(input('1 - English\n2 - Spanish\n3 - Previous Page\nEnter a choice: '))
+        if language == 3:
+            self.back_page()
+        try:
+            self.user.set_language(language)
+        except ValueError:
+            print("Please try again.")
+            self.language_page()
+        print("Language set.")
 
     # goes up a level to the previous page
     def back_page(self):

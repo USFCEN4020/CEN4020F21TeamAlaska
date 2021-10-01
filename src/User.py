@@ -1,6 +1,5 @@
 from src.database_access import database_access as Database
 
-
 class User:
     def __init__(
         self,
@@ -49,12 +48,17 @@ class User:
         sql = 'UPDATE users SET ad_notification = ? WHERE username = ?'
         self.db.execute(sql, [ad_notification, self.username])
 
-    def set_language(self, language: str):
-        if language not in ("english", "spanish"):
+    def set_language(self, language: int):
+        languageStr = ""
+        if language == 1:
+            languageStr = "english"
+        elif language == 2:
+            languageStr = "spanish"
+        else:
             raise ValueError("language not supported")
-        self.language = language
+        self.language = languageStr
         sql = 'UPDATE users SET language = ? WHERE username = ?'
-        self.db.execute(sql, [language, self.username])
+        self.db.execute(sql, [languageStr, self.username])
 
 
 def get_user_by_login(username: str, password: str, db: Database) -> User:
