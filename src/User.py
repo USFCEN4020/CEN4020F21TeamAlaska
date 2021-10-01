@@ -48,14 +48,14 @@ class User:
         sql = 'UPDATE users SET ad_notification = ? WHERE username = ?'
         self.db.execute(sql, [ad_notification, self.username])
 
-    def set_language(self, language: int):
+    def set_language(self, language: str):
         languageStr = ""
-        if language == 1:
+        if language == '1':
             languageStr = "english"
-        elif language == 2:
+        elif language == '2':
             languageStr = "spanish"
         else:
-            raise ValueError("language not supported")
+            raise ValueError("language not supported.")
         self.language = languageStr
         sql = 'UPDATE users SET language = ? WHERE username = ?'
         self.db.execute(sql, [languageStr, self.username])

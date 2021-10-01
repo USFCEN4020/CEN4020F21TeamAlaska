@@ -44,6 +44,18 @@ class Page:
             },
             9: {
                 "view": self.important_links_page
+            },
+            10: {
+                "view": self.privacy_page
+            },
+            11: {
+                "view": self.guest_controls_page
+            },
+            12: {
+                "view": self.language_page
+            },
+            13: {
+                "view": self.option_switch_page
             }
         }
 
@@ -193,12 +205,9 @@ class Page:
         
         # privacy policy
         if choice == 5:
-            # content made by daniel
-            # guest controls is also placed inside privacy policy for some reason
-            guestcontrol = int(input("1 - Guest Controls\nEnter a choice: "))
-            if guestcontrol == 1:
-                # content made by daniel
-                self.back_option()
+            self.page_stack.append(10)
+            self.privacy_page()
+            self.back_page()
         
         # cookie policy
         if choice == 6:
@@ -217,9 +226,9 @@ class Page:
         
         # languages
         if choice == 9:
-            # content made by daniel
-            self.page_stack.append(9)
+            self.page_stack.append(12)
             self.language_page()
+            self.back_page()
 
 
     def play_video_page(self):
@@ -318,15 +327,58 @@ class Page:
 
     def language_page(self):
         print("Select a language:")
-        language = int(input('1 - English\n2 - Spanish\n3 - Previous Page\nEnter a choice: '))
-        if language == 3:
+        language = input('1 - English\n2 - Spanish\n3 - Previous Page\nEnter a choice: ')
+        if language == '3':
             self.back_page()
         try:
             self.user.set_language(language)
-        except ValueError:
-            print("Please try again.")
+            print("Language set.\n")
+        except ValueError as e:
+            print("{} Please try again.".format(e))
             self.language_page()
-        print("Language set.")
+
+    def option_switch_page(self) -> bool or None:
+        switch = input("1 - On\n2 - Off\n3 - Previous Page\nEnter Choice: ")
+        if switch == '1':
+            return True
+        elif switch == '2':
+            return False
+        else:
+            return None
+            
+    def privacy_page(self):
+        guestcontrol = int(input("1 - Guest Controls\n2 - Previous Page\nEnter a choice: "))
+        if guestcontrol == 1:
+            self.page_stack.append(11)
+            self.guest_controls_page()
+        elif guestcontrol == 2:
+            self.back_page()
+
+    def guest_controls_page(self):
+        option = input('\n1 - Email Notifications\n2 - SMS notifications\n3 - tareted ads\n4 - Previous Page\nEnter a choice: ')
+        if option == '1':
+            self.page_stack.append(13)
+            switch = self.option_switch_page()
+            if switch:
+                self.user.set_email_notification(switch)
+            else:
+                self.back_page()
+        elif option == '2':
+            self.page_stack.append(13)
+            switch = self.option_switch_page()
+            if switch:
+                self.user.set_sms_notification(switch)
+            else:
+                self.back_page()
+        elif option == '3':
+            self.page_stack.append(13)
+            switch = self.option_switch_page()
+            if switch:
+                self.user.set_ad_notification(switch)
+            else:
+                self.back_page()
+        elif option == '4':
+            self.back_page()
 
     # goes up a level to the previous page
     def back_page(self):
