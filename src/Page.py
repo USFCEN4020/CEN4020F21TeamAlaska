@@ -1,20 +1,8 @@
-from enum import Enum
-import enum
 import re
 from src.database_access import database_access as Database
 from src.User import *
+from src.PostedJob import PostedJob
 db = Database("InCollege.sqlite3")
-
-
-# class to store a job
-class PostedJob():
-    def __init__(name, title, description, employer, location, salary):
-        name = name
-        title = title
-        description = description
-        employer = employer
-        location = location
-        salary = salary
 
 
 class Page:
