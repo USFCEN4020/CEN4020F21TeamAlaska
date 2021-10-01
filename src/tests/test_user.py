@@ -22,7 +22,7 @@ def data():
 
 
 def test_get_user_by_login(data):
-    expected = User("darvelo", "password1!", "daniel", "arvelo",
+    expected = User("darvelo", "password1!", "daniel", "arvelo", "english",
                     True, True, True, True, data["db"])
     actual = get_user_by_login(
         expected.username, expected.password, expected.db)
@@ -30,7 +30,7 @@ def test_get_user_by_login(data):
 
 
 def test_create_user(data):
-    expected = User("randion", "Password1!", "robert", "andion",
+    expected = User("randion", "Password1!", "robert", "andion", "english",
                     True, True, True, True, data["db"])
 
     credentials = ("randion", "Password1!", "robert", "andion")
@@ -44,7 +44,7 @@ def test_create_user(data):
 
 
 def test_authorize(data):
-    user = User("", "", "", "", False, False, False, False, data["db"])
+    user = User("", "", "", "", "", False, False, False, False, data["db"])
     # test before (input is False)
     assert user.authorized == False
     user.authorize()

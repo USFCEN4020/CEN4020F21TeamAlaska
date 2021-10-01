@@ -21,7 +21,8 @@ class Page:
     # each page will "render" the appropriate "form" or prompt
     def __init__(self):
         # current login info
-        self.user = User("", "", "", "", False, True, True, True, db)
+        self.user = User("", "", "", "", "english",
+                         True, True, True, False, db)
         # stack is to implement the navigation functionality
         self.page_stack = []
         # Numbered pages so they're easily added to the stack and then called
