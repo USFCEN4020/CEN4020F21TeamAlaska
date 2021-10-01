@@ -49,10 +49,16 @@ class User:
         sql = 'UPDATE users SET ad_notification = ? WHERE username = ?'
         self.db.execute(sql, [ad_notification, self.username])
 
+    def set_language(self, language: str):
+        if language not in ("english", "spanish"):
+            raise ValueError("language not supported")
+        self.language = language
+        sql = 'UPDATE users SET language = ? WHERE username = ?'
+        self.db.execute(sql, [language, self.username])
+
 
 def get_user_by_login(username: str, password: str, db: Database) -> User:
-    find_user = (
-        'SELECT * FROM users WHERE username = ? AND password = ?')
+    find_user = 'SELECT * FROM users WHERE username = ? AND password = ?'
     res = db.execute(find_user, (username, password))
     if res:
         res = res[0]
