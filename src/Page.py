@@ -12,7 +12,7 @@ class Page:
         self.user = User("", "", "", "", "english",
                          True, True, True, False, db)
         # stack is to implement the navigation functionality
-        self.page_stack = []
+        self.page_stack = [0]
         # Numbered pages so they're easily added to the stack and then called
         self.index = {
             0: {
@@ -60,49 +60,60 @@ class Page:
         }
 
     def home_page(self):
-        self.page_stack.append(0)
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
             c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
                           "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\nEnter a choice: "))
             if c == 1:
+                self.page_stack.append(1)
                 self.play_video_page()
             if c == 2:
+                self.page_stack.append(2)
                 self.find_people_page()
             if c == 3:
+                self.page_stack.append(3)
                 self.register_page()
             if c == 4:
+                self.page_stack.append(4)
                 self.login_page()
             if c == 5:
+                self.page_stack.append(7)
                 self.useful_links_page()
             if c == 6:
+                self.page_stack.append(9)
                 self.important_links_page()
         else:
             c = int(input(
                 "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\nEnter a choice: "))
             if c == 1:
+                self.page_stack.append(5)
                 self.post_job_page()
             if c == 2:
+                self.page_stack.append(2)
                 self.find_people_page()
             if c == 3:
+                self.page_stack.append(6)
                 self.skills_page()
             if c == 4:
+                self.page_stack.append(7)
                 self.useful_links_page()
             if c == 5:
+                self.page_stack.append(9)
                 self.important_links_page()
 
     def useful_links_page(self):
-        self.page_stack.append(7)
         # select from links
         choice = int(input(
             "1 - General\n2 - Browse InCollege\n3 - Business Solutions\n4 - Directories\n5 - Previous Page\nEnter a choice: "))
 
         # general
         if choice == 1:
+            self.page_stack.append(8)
             self.general_page()
 
         # browse incollege
         if choice == 2:
+            self.page_stack.append(-1)
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
@@ -110,6 +121,7 @@ class Page:
 
         # business solutions
         if choice == 3:
+            self.page_stack.append(-1)
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
@@ -117,6 +129,7 @@ class Page:
 
         # directories
         if choice == 4:
+            self.page_stack.append(-1)
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
@@ -127,7 +140,6 @@ class Page:
             self.back_page()
 
     def general_page(self):
-        self.page_stack.append(8)
         # select from links under the general page
         choice = int(input(
             "1 - Sign Up\n2 - Help Center\n3 - About\n4 - Press\n5 - Blog\n6 - Careers\n7 - Developers\n8 - Previous Page\nEnter a choice: "))
@@ -137,28 +149,34 @@ class Page:
             logORreg = int(
                 input("Do you already have an account?\n1 - Yes\n2 - No\nEnter a choice: "))
             if logORreg == 1:
+                self.page_stack.append(4)
                 self.login_page()
             if logORreg == 2:
+                self.page_stack.append(3)
                 self.register_page()
 
         # help center
         if choice == 2:
+            self.page_stack.append(-1)
             print("We're here to help")
             self.back_option()
 
         # about
         if choice == 3:
+            self.page_stack.append(-1)
             print("In College: Welcome to In College, the world's largest college student network with many users in many countries and territories worldwide")
             self.back_option()
 
         # press
         if choice == 4:
+            self.page_stack.append(-1)
             print(
                 "In College Pressroom: Stay on top of the latest news, updates, and reports")
             self.back_option()
 
         # blog
         if choice == 5:
+            self.page_stack.append(-1)
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
@@ -166,6 +184,7 @@ class Page:
 
         # careers
         if choice == 6:
+            self.page_stack.append(-1)
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
@@ -173,6 +192,7 @@ class Page:
 
         # developers
         if choice == 7:
+            self.page_stack.append(-1)
             # FUNCTION TO BE ADDED IN FUTURE EPICS
             # MAKE SURE YOU ADD AN INDIVIDUAL BACK OPTION FOR THE FUNCTION INSERTED OR LEAVE THE ONE CURRENTLY IN PLACE
             print("Under construction")
@@ -180,10 +200,9 @@ class Page:
 
         # previous page
         if choice == 8:
-            self.back_option()
+            self.back_page()
 
     def important_links_page(self):
-        self.page_stack.append(9)
         choice = int(input("1 - Copyright Notice\n2 - About\n3 - Accessibility\n4 - User Agreement\n5 - Privacy Policy"
                            "\n6 - Cookie Policy\n7 - Copyright Policy\n8 - Brand Policy\n9 - Languages\n10 - Previous Page\nEnter a choice: "))
 
@@ -240,36 +259,35 @@ class Page:
         if choice == 9:
             self.page_stack.append(12)
             self.language_page()
+            # self.back_page()
 
         # Previous Page
         if choice == 10:
             self.back_page()
 
     def play_video_page(self):
-        self.page_stack.append(1)
         print("Video is now playing...")
         # back_option prompts the user to enter 0 if they wanna go back
         self.back_option()
 
     def login_page(self):
-        self.page_stack.append(4)
         res = self.login()
         if res:
             self.user.authorize()
         # Once the user logs in, they get redirected to the home page
+        self.page_stack.append(0)
         self.home_page()
 
     def register_page(self):
-        self.page_stack.append(3)
         res = self.register()
         if res:
             # the user is now authenticated, they'll view things slightly different
             self.user.authorize()
         # Once the user logs in, they get redirected to the home page
+        self.page_stack.append(0)
         self.home_page()
 
     def find_people_page(self):
-        self.page_stack.append(2)
         fname = input("Enter your friend's firstname: ")
         lname = input("Enter your friend's lastname: ")
         find_friend = (
@@ -284,8 +302,10 @@ class Page:
                 c = int(
                     input("Would you like to join?\n1-Regiser\n2-Login\n0 - To go back: "))
                 if c == 1:
+                    self.page_stack.append(3)
                     self.register_page()
                 elif c == 2:
+                    self.page_stack.append(4)
                     self.login_page()
                 elif c == 0:
                     self.back_page()
@@ -325,14 +345,12 @@ class Page:
             return True
 
     def post_job_page(self):
-        self.page_stack.append(5)
         if self.user.authorized:
             self.postjob()
             # this is to go back a level
             self.back_option()
 
     def skills_page(self):
-        self.page_stack.append(6)
         skill = input(
             '\n1 - JavaScript\n2 - Python\n3 - SQL Sever\n4 - MongoDB\n5 - Design Patterns\nEnter a choice: ')
         if skill:
@@ -350,6 +368,7 @@ class Page:
         try:
             self.user.set_language(language)
             print("Language set.\n")
+            self.back_page()
         except ValueError as e:
             print("{} Please try again.".format(e))
             self.language_page()
