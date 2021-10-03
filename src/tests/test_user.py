@@ -113,3 +113,19 @@ def test_set_ad_notification(data):
 
     ad_notification = data["db"].execute(sql, [user.username])[0][0]
     assert ad_notification == True
+
+
+def test_set_language(data):
+    sql = 'SELECT language FROM users WHERE username = ?'
+    user = data["user"]
+
+    user.set_language('1') 
+    language = data["db"].execute(sql, [user.username])[0][0]
+    assert language == 'english'
+
+    user.set_language('2') 
+    language = data["db"].execute(sql, [user.username])[0][0]
+    assert language == 'spanish'
+
+    with pytest.raises(ValueError):
+        user.set_language('fo')
