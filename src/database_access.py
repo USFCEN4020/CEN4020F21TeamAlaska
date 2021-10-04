@@ -16,7 +16,7 @@ class database_access:
             sms_notification BOOLEAN NOT NULL,
             ad_notification BOOLEAN NOT NULL
         )
-    '''
+        '''
         sql_create_jobs_table = ''' CREATE TABLE IF NOT EXISTS jobs (
             username text NOT NULL,
             title text NOT NULL,
@@ -26,11 +26,39 @@ class database_access:
             salary real NOT NULL,
             PRIMARY KEY(username,title)
         )
-    '''
+        '''
+        sql_create_profile_table = '''
+        CREATE TABLE IF NOT EXISTS profile (
+            username text NOT NULL,
+            title text,
+            major text,
+            university_name text,
+            about_me text,
+            education text,
+            PRIMARY KEY(username,title),
+            FOREIGN KEY (username) REFERENCES users (username)
+            )
+        '''
+        sql_create_user_job_experience_table = '''
+            CREATE TABLE IF NOT EXISTS job_experience (
+            username text NOT NULL,
+            title text,
+            employer text,
+            date_start text,
+            date_end text,
+            location text,
+            description text,
+            PRIMARY KEY(username,title),
+            FOREIGN KEY (username) REFERENCES users (username)
+            )
+        '''
 
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
+        # self.db.commit()
+        c.execute(sql_create_profile_table)
+        c.execute(sql_create_user_job_experience_table)
         self.db.commit()
 
     # To select and print all tables
