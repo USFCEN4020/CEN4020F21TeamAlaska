@@ -78,6 +78,22 @@ class database_access:
         for row in data:
             print(row)
 
+    def print_profile(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM profile')
+        # view all selected records
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
+    def print_job_experience(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM job_experience')
+        # view all selected jobs
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
     # if you want to clear the table(s)
     def delete_users_table(self):
         c = self.db.cursor()
@@ -85,9 +101,15 @@ class database_access:
         c.execute(sql)
         self.db.commit()
 
-    def delete_jobs_table(self):
+    def delete_profile_table(self):
         c = self.db.cursor()
-        sql = 'DELETE FROM jobs'
+        sql = 'DELETE FROM profile'
+        c.execute(sql)
+        self.db.commit()
+    
+    def delete_job_experience_table(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM job_experience'
         c.execute(sql)
         self.db.commit()
 
