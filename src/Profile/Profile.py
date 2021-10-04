@@ -34,3 +34,14 @@ def printUserProfile(user, db): # Requires Database and User object, will print 
     for item in print_queue:
         print(item + '\n')
 
+def formatString(inputString): # Function to put string into first letter cap format.
+    splitString = inputString.split(' ')
+    out = ''
+    for word in splitString:
+        wordLower = str(word).lower()
+        if wordLower[0].isalpha():
+            out += wordLower[0].upper() + wordLower[1:] + ' '
+        else:
+            out += wordLower + ' '
+
+    return out
