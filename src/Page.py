@@ -62,8 +62,18 @@ class Page:
     def home_page(self):
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
-            c = int(input("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
-                          "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\nEnter a choice: "))
+            c = -1
+            print("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
+                  "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\n7 - Exit\nEnter a choice: ")
+            while(True):
+                try:
+                    c = int(input())
+                    if(c in range(0, 8)):
+                        break
+                    else:
+                        print("Please try again with an integer between 0 and 7")
+                except:
+                    print("Please try again, Enter a valid integer.")
             if c == 1:
                 self.page_stack.append(1)
                 self.play_video_page()
@@ -82,9 +92,22 @@ class Page:
             if c == 6:
                 self.page_stack.append(9)
                 self.important_links_page()
+            if c == 7:
+                print("Thank you for using InCollege!")
+                return 0
         else:
-            c = int(input(
-                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\nEnter a choice: "))
+            c = -1
+            print(
+                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Exit\nEnter a choice: ")
+            while(True):
+                try:
+                    c = int(input())
+                    if(c in range(0, 7)):
+                        break
+                    else:
+                        print("Please try again with an integer between 0 and 6")
+                except:
+                    print("Please try again, Enter a valid integer.")
             if c == 1:
                 self.page_stack.append(5)
                 self.post_job_page()
@@ -100,6 +123,9 @@ class Page:
             if c == 5:
                 self.page_stack.append(9)
                 self.important_links_page()
+            if c == 6:
+                print("Thank you for using InCollege!")
+                return 0
 
     def useful_links_page(self):
         # select from links

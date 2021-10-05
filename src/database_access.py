@@ -16,7 +16,7 @@ class database_access:
             sms_notification BOOLEAN NOT NULL,
             ad_notification BOOLEAN NOT NULL
         )
-    '''
+        '''
         sql_create_jobs_table = ''' CREATE TABLE IF NOT EXISTS jobs (
             username text NOT NULL,
             title text NOT NULL,
@@ -26,11 +26,39 @@ class database_access:
             salary real NOT NULL,
             PRIMARY KEY(username,title)
         )
-    '''
+        '''
+        sql_create_profile_table = '''
+        CREATE TABLE IF NOT EXISTS profile (
+            username text NOT NULL,
+            title text,
+            major text,
+            university_name text,
+            about_me text,
+            education text,
+            PRIMARY KEY(username,title),
+            FOREIGN KEY (username) REFERENCES users (username)
+            )
+        '''
+        sql_create_user_job_experience_table = '''
+            CREATE TABLE IF NOT EXISTS job_experience (
+            username text NOT NULL,
+            title text,
+            employer text,
+            date_start text,
+            date_end text,
+            location text,
+            description text,
+            PRIMARY KEY(username,title),
+            FOREIGN KEY (username) REFERENCES users (username)
+            )
+        '''
 
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
+        # self.db.commit()
+        c.execute(sql_create_profile_table)
+        c.execute(sql_create_user_job_experience_table)
         self.db.commit()
 
     # To select and print all tables
@@ -50,6 +78,22 @@ class database_access:
         for row in data:
             print(row)
 
+    def print_profile(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM profile')
+        # view all selected records
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
+    def print_job_experience(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM job_experience')
+        # view all selected jobs
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
     # if you want to clear the table(s)
     def delete_users_table(self):
         c = self.db.cursor()
@@ -57,9 +101,15 @@ class database_access:
         c.execute(sql)
         self.db.commit()
 
-    def delete_jobs_table(self):
+    def delete_profile_table(self):
         c = self.db.cursor()
-        sql = 'DELETE FROM jobs'
+        sql = 'DELETE FROM profile'
+        c.execute(sql)
+        self.db.commit()
+    
+    def delete_job_experience_table(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM job_experience'
         c.execute(sql)
         self.db.commit()
 

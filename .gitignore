@@ -11,3 +11,5 @@ Pipfile
 pyproject.toml
 
 testing.sqlite3
+
+InCollege.sqlite3
