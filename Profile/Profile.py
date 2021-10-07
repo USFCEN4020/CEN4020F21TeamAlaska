@@ -89,3 +89,17 @@ def printUserProfile(user: User, db: database_access):
 
     for item in print_queue:
         print(item + '\n')
+
+
+# Function to put string into first letter cap format.
+def formatString(inputString):
+    splitString = inputString.split(' ')
+    out = ''
+    for word in splitString:
+        wordLower = str(word).lower()
+        if wordLower[0].isalpha():
+            out += wordLower[0].upper() + wordLower[1:] + ' '
+        else:
+            out += wordLower + ' '
+
+    return out
