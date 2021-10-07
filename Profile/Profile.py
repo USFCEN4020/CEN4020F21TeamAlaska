@@ -11,6 +11,31 @@ class Profile:
         self.about_me = about_me
         self.education = education
 
+    def set_title(self, title: str, db: database_access):
+        self.title = title
+        sql = 'UPDATE profile SET title = ? WHERE username = ?'
+        db.execute(sql, [title, self.username])
+
+    def set_major(self, major: str, db: database_access):
+        self.major = major.title()
+        sql = 'UPDATE profile SET major = ? WHERE username = ?'
+        db.execute(sql, [self.major, self.username])
+
+    def set_university_name(self, university_name: str, db: database_access):
+        self.university_name = university_name.title()
+        sql = 'UPDATE profile SET university_name = ? WHERE username = ?'
+        db.execute(sql, [self.university_name, self.username])
+
+    def set_about_me(self, about_me: str, db: database_access):
+        self.about_me = about_me
+        sql = 'UPDATE profile SET about_me = ? WHERE username = ?'
+        db.execute(sql, [about_me, self.username])
+
+    def set_education(self, education: str, db: database_access):
+        self.education = education
+        sql = 'UPDATE profile SET education = ? WHERE username = ?'
+        db.execute(sql, [education, self.username])
+
 
 def getProfile(username: str, db: database_access) -> Profile:
     profileQueryString = '''
