@@ -68,7 +68,6 @@ class Page:
         }
 
     def home_page(self):
-        print(self.page_stack)
         # I want the home page to view different option depending on whether or not the user is authenticated
         if not self.user.authorized:
             c = -1
@@ -512,7 +511,6 @@ class Page:
     ################ Profile Pages ##############
     # Creates profile
     def editProfilePage(self, profile: Profile, db: database_access):
-        print(self.page_stack)
         missingTxt = " (missing)"
         title = "1 - title"
         major = "2 - major"
@@ -548,6 +546,7 @@ class Page:
                 self.back_page([self.user, db])
             else:
                 self.back_page()
+            return
         # Title
         if c == 1:
             title_input = input("Enter your title: ")
@@ -572,13 +571,13 @@ class Page:
         # If the user just completed their profile, send them to profile screen
         if incomplete and profile.isComplete():
             self.printUserProfile(self.user, db)
+            return
 
         if c in range(1, 6):
             self.editProfilePage(profile, db)
 
     # Requires Database and User object, will print out full profile.
     def printUserProfile(self, user: User, db: database_access):
-        print(self.page_stack)
         jobQueryString = '''
         SELECT *
         FROM job_experience
@@ -588,6 +587,7 @@ class Page:
         jobInformation = db.execute(jobQueryString, [user.username])
         if not profileInformation.isComplete():
             self.editProfilePage(profileInformation, db)
+            return
 
         print_queue = []
         print_queue.append(user.firstname + ' ' +
