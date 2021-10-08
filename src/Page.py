@@ -2,6 +2,8 @@ import re
 from src.database_access import database_access as Database
 from src.User import *
 from src.PostedJob import PostedJob
+from Profile.Profile import *
+from src.helpers import validateMenuInput
 db = Database("InCollege.sqlite3")
 
 
@@ -56,6 +58,12 @@ class Page:
             },
             13: {
                 "view": self.option_switch_page
+            },
+            14: {
+                "view": self.printUserProfile
+            },
+            15: {
+                "view": self.editProfilePage
             }
         }
 
@@ -65,15 +73,7 @@ class Page:
             c = -1
             print("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
                   "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\n7 - Exit\nEnter a choice: ")
-            while(True):
-                try:
-                    c = int(input())
-                    if(c in range(0, 8)):
-                        break
-                    else:
-                        print("Please try again with an integer between 0 and 7")
-                except:
-                    print("Please try again, Enter a valid integer.")
+            c = validateMenuInput(7)
             if c == 1:
                 self.page_stack.append(1)
                 self.play_video_page()
@@ -98,16 +98,8 @@ class Page:
         else:
             c = -1
             print(
-                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Exit\nEnter a choice: ")
-            while(True):
-                try:
-                    c = int(input())
-                    if(c in range(0, 7)):
-                        break
-                    else:
-                        print("Please try again with an integer between 0 and 6")
-                except:
-                    print("Please try again, Enter a valid integer.")
+                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Exit\nEnter a choice: ")
+            c = validateMenuInput(7)
             if c == 1:
                 self.page_stack.append(5)
                 self.post_job_page()
@@ -124,6 +116,9 @@ class Page:
                 self.page_stack.append(9)
                 self.important_links_page()
             if c == 6:
+                self.page_stack.append(14)
+                self.printUserProfile(self.user, db)
+            if c == 7:
                 print("Thank you for using InCollege!")
                 return 0
 
@@ -452,11 +447,11 @@ class Page:
             self.back_page()
 
     # goes up a level to the previous page
-    def back_page(self):
+    def back_page(self, args=[]):
         # call the function for the previous page
         self.page_stack.pop()
         prev = self.page_stack[-1]
-        self.index[prev]['view']()
+        self.index[prev]['view'](*args)
 
     def back_option(self):
         c = input("0 - To go back: ")
@@ -512,3 +507,114 @@ class Page:
         pattern = re.compile(reg)
         res = re.match(pattern, pw)
         return res != None
+
+    ################ Profile Pages ##############
+    # Creates profile
+    def editProfilePage(self, profile: Profile, db: database_access):
+        missingTxt = " (missing)"
+        title = "1 - title"
+        major = "2 - major"
+        university_name = "3 - university name"
+        about_me = "4 - about me"
+        education = "5 - education"
+        back = "6 - Previous Page"
+        incomplete = False
+        if not profile.isComplete():
+            incomplete = True
+            print("You may not access your profile until you fill out every field (you may come back later and continue were you left off)")
+            if profile.title == None:
+                title += missingTxt
+            if profile.major == None:
+                major += missingTxt
+            if profile.university_name == None:
+                university_name += missingTxt
+            if profile.about_me == None:
+                about_me += missingTxt
+            if profile.education == None:
+                education += missingTxt
+
+        menu_items = "Please select a field to edit:\n{}\n{}\n{}\n{}\n{}\n{}\nEnter Choice: ".format(
+            title, major, university_name, about_me, education, back)
+
+        # display meny and get user input
+        print(menu_items)
+        c = validateMenuInput(6)
+
+        # back
+        if c == 6:
+            if profile.isComplete():
+                self.back_page([self.user, db])
+            else:
+                self.back_page()
+            return
+        # Title
+        if c == 1:
+            title_input = input("Enter your title: ")
+            profile.set_title(title_input, db)
+        # major
+        elif c == 2:
+            major_input = input("Enter your major: ")
+            profile.set_major(major_input, db)
+        # university name
+        elif c == 3:
+            university_name_input = input("Enter your university's name: ")
+            profile.set_university_name(university_name_input, db)
+        # about me
+        elif c == 4:
+            about_me_input = input("Enter your about me: ")
+            profile.set_about_me(about_me_input, db)
+        # education
+        elif c == 5:
+            education_input = input("Enter your education: ")
+            profile.set_education(education_input, db)
+
+        # If the user just completed their profile, send them to profile screen
+        if incomplete and profile.isComplete():
+            self.printUserProfile(self.user, db)
+            return
+
+        if c in range(1, 6):
+            self.editProfilePage(profile, db)
+
+    # Requires Database and User object, will print out full profile.
+    def printUserProfile(self, user: User, db: database_access):
+        jobQueryString = '''
+        SELECT *
+        FROM job_experience
+        WHERE username = ?
+        '''
+        profileInformation = getProfile(user.username, db)
+        jobInformation = db.execute(jobQueryString, [user.username])
+        if not profileInformation.isComplete():
+            self.editProfilePage(profileInformation, db)
+            return
+
+        print_queue = []
+        print_queue.append(user.firstname + ' ' +
+                           user.lastname + '\'s Profile')
+        print_queue.append('Title: ' + profileInformation.title)
+        print_queue.append('Major: ' + profileInformation.major)
+        print_queue.append('University: ' + profileInformation.university_name)
+        print_queue.append('Information and Education\n' +
+                           profileInformation.about_me + ' ' + profileInformation.education)
+
+        if len(jobInformation) > 0:
+            print_queue.append('Job Experience')
+            for job in jobInformation:
+                print_queue.append('Title: ' + job[0])
+                print_queue.append('Employer: ' + job[1])
+                print_queue.append('Date Started: ' + job[2])
+                print_queue.append('Date Ended: ' + job[3])
+                print_queue.append("Location: " + job[4])
+                print_queue.append('Job Description: \n' + job[5])
+
+        for item in print_queue:
+            print(item + '\n')
+
+        print("Please select an option below:\n1 - Edit Profile\n2 - Previous Page\nEnter Choice: ")
+        c = validateMenuInput(2)
+        if c == 1:
+            self.page_stack.append(15)
+            self.editProfilePage(profileInformation, db)
+        elif c == 2:
+            self.back_page()
