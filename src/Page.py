@@ -595,7 +595,7 @@ class Page:
         print_queue.append('Title: ' + profileInformation.title)
         print_queue.append('Major: ' + profileInformation.major)
         print_queue.append('University: ' + profileInformation.university_name)
-        print_queue.append('Information and Education\n' +
+        print_queue.append('Information and Education:\n' +
                            profileInformation.about_me + ' ' + profileInformation.education)
 
         if len(jobInformation) > 0:
