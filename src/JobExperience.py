@@ -1,3 +1,5 @@
+from typing import List
+
 from database_access import database_access
 
 
@@ -12,7 +14,7 @@ class JobExperience:
         self.description = description
 
 
-def getJobInformation(username: str, db: database_access) -> list(JobExperience):
+def getJobInformation(username: str, db: database_access) -> List[JobExperience]:
     jobQueryString = '''
         SELECT *
         FROM job_experience

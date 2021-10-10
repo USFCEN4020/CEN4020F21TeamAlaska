@@ -1,5 +1,6 @@
 import re
 from src.database_access import database_access as Database
+from src.JobExperience import *
 from src.User import *
 from src.PostedJob import PostedJob
 from Profile.Profile import *
@@ -578,13 +579,9 @@ class Page:
 
     # Requires Database and User object, will print out full profile.
     def printUserProfile(self, user: User, db: database_access):
-        jobQueryString = '''
-        SELECT *
-        FROM job_experience
-        WHERE username = ?
-        '''
+
         profileInformation = getProfile(user.username, db)
-        jobInformation = db.execute(jobQueryString, [user.username])
+        jobInformation = getJobInformation(user.username, db)
         if not profileInformation.isComplete():
             self.editProfilePage(profileInformation, db)
             return
@@ -601,12 +598,12 @@ class Page:
         if len(jobInformation) > 0:
             print_queue.append('Job Experience')
             for job in jobInformation:
-                print_queue.append('Title: ' + job[0])
-                print_queue.append('Employer: ' + job[1])
-                print_queue.append('Date Started: ' + job[2])
-                print_queue.append('Date Ended: ' + job[3])
-                print_queue.append("Location: " + job[4])
-                print_queue.append('Job Description: \n' + job[5])
+                print_queue.append('Title: ' + job.title)
+                print_queue.append('Employer: ' + job.employer)
+                print_queue.append('Date Started: ' + job.date_start)
+                print_queue.append('Date Ended: ' + job.date_end)
+                print_queue.append("Location: " + job.location)
+                print_queue.append('Job Description: \n' + job.description)
 
         for item in print_queue:
             print(item + '\n')
