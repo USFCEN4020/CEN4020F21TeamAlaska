@@ -106,10 +106,16 @@ class database_access:
         sql = 'DELETE FROM profile'
         c.execute(sql)
         self.db.commit()
-    
+
     def delete_job_experience_table(self):
         c = self.db.cursor()
         sql = 'DELETE FROM job_experience'
+        c.execute(sql)
+        self.db.commit()
+
+    def delete_jobs_table(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM jobs'
         c.execute(sql)
         self.db.commit()
 
