@@ -12,6 +12,11 @@ class Profile:
         self.about_me = about_me
         self.education = education
 
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.username == other.username and self.title == other.title and self.major == other.major and self.university_name == other.university_name and self.about_me == other.about_me and self.education == other.education
+        return False
+
     def set_title(self, title: str, db: database_access):
         self.title = title
         sql = 'UPDATE profile SET title = ? WHERE username = ?'
