@@ -7,6 +7,7 @@ def resetFunctions():
     src.Page.input = input
     src.Page.print = print
 
+
 class TestJobPosting():
     page = src.Page.Page()
     page.user.username = "General Kenobi The Negotiator"
@@ -85,5 +86,5 @@ class TestJobPosting():
 
     def testCleanUp(self):  # Teardown
         self.db.delete_jobs_table()
-        self.db.close()
+        # self.db.close()
         assert True == True
