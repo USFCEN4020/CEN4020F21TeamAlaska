@@ -5,6 +5,18 @@ from Profile.Profile import *
 from src.Page import *
 from src.JobExperience import *
 
+
+# Does initial setup before any test runs
+def setup_module():
+    global db
+    db = Database("testing.sqlite3")
+    src.Page.db = db
+    db.delete_profile_table()
+    db.delete_users_table()
+    db.delete_job_experience_table()
+    db.delete_jobs_table()
+
+
 def resetFunctions():
     src.Page.input = input
     src.Page.print = print
@@ -169,63 +181,78 @@ class TestRegisterLogin:
         src.database_access.print = print
         assert output == [
             ('randion', 'Password#1', 'Robby',
-             'Ybbor', 'english', True, True, True),
+             'Ybbor', 'english', 1, 1, 1),
             ('randion0', 'Password#10', 'Robby0',
-             'Ybbor0', 'english', True, True, True),
+             'Ybbor0', 'english', 1, 1, 1),
             ('randion1', 'Password#11', 'Robby1',
-             'Ybbor1', 'english', True, True, True),
+             'Ybbor1', 'english', 1, 1, 1),
             ('randion2', 'Password#12', 'Robby2',
-             'Ybbor2', 'english', True, True, True),
+             'Ybbor2', 'english', 1, 1, 1),
             ('randion3', 'Password#13', 'Robby3',
-             'Ybbor3', 'english', True, True, True)
+             'Ybbor3', 'english', 1, 1, 1),
+
         ]
 
     def testCleanUp(self):  # Teardown
         self.db.delete_users_table()
-        self.db.close()
         assert True == True
 
+
 class TestProfileControls:
-    db = Database('epic4profiletest.sqlite3')
-    src.Page.db = db
-    credentials = ("testuser", "Password1!", "Nathan", "Aldino")
-    user = create_user(credentials,db)
-    unfinishedprofile = Profile(None,None,None,None,None,None)
-    
+    def testSetUp(self):
+        credentials = ("testuser", "Password1!",
+                       "Nathan", "Aldino")
+        create_user(credentials, db)
+
     def testProfilePrint(self):
-        getProfile("testuser",db)
-        profile = Profile("testuser", "sir", "general", "university","i code","no education")
-        profile.set_title(profile.title,db)
-        profile.set_major(profile.major,db)
-        profile.set_university_name(profile.university_name,db)
-        profile.set_about_me(profile.about_me,db)
-        profile.set_education(profile.education,db)
-        comparison = getProfile("testuser",db)
+        profile = Profile("testuser", "sir", "general",
+                          "university", "i code", "no education")
+        getProfile("testuser", db)
+        profile.set_title(profile.title, db)
+        profile.set_major(profile.major, db)
+        profile.set_university_name(profile.university_name, db)
+        profile.set_about_me(profile.about_me, db)
+        profile.set_education(profile.education, db)
+        comparison = getProfile("testuser", db)
+        print("\n\n\n\n")
+        print(comparison.title)
         assert profile == comparison
 
     def testJobExperiencePrint(self):
-        testjobexp = JobExperience("testuser","publix1","publix","today","tomrrow","here","cashier")
+        testjobexp = JobExperience(
+            "testuser", "publix1", "publix", "today", "tomrrow", "here", "cashier")
         testjobexp.DbAddJobExperience(db)
-        alljobs = getJobInformation("testuser",db)
+        alljobs = getJobInformation("testuser", db)
         assert alljobs[0] == testjobexp
 
     def testEditIfIncomplete(self):
-        self.unfinishedprofile.set_title("mr",db)
-        assert  (
-                    self.unfinishedprofile.title == "mr" and
-                    not self.unfinishedprofile.isComplete() 
-                )
-    
-    def testEditComplete(self):
-        self.unfinishedprofile.set_major("compsci",db)
-        self.unfinishedprofile.set_university_name("usf",db)
-        self.unfinishedprofile.set_about_me("apple",db)
-        self.unfinishedprofile.set_education("elementary school",db)
-        assert self.unfinishedprofile.isComplete
+        unfinishedprofile = Profile(None, None, None, None, None, None)
+        unfinishedprofile.set_title("mr", db)
+        assert (
+            unfinishedprofile.title == "mr" and
+            not unfinishedprofile.isComplete()
+        )
 
-    def testCleanUp(self):  # Teardown
-        self.db.delete_profile_table
-        self.db.delete_users_table
-        self.db.delete_job_experience_table
-        self.db.close()
-        assert True == True
+    def testEditComplete(self):
+        unfinishedprofile = Profile("user", None, None, None, None, None)
+        unfinishedprofile.set_title("title", db)
+        unfinishedprofile.set_major("compsci", db)
+        unfinishedprofile.set_university_name("usf", db)
+        unfinishedprofile.set_about_me("apple", db)
+        unfinishedprofile.set_education("elementary school", db)
+        assert unfinishedprofile.isComplete()
+
+    def testCleanUp(self):
+        db.delete_profile_table()
+        db.delete_users_table()
+        db.delete_job_experience_table()
+
+
+# Runs after every test in this file has finished running
+def teardown_module():
+    db = Database('testing.sqlite3')
+    db.delete_profile_table()
+    db.delete_users_table()
+    db.delete_job_experience_table()
+    db.delete_jobs_table()
+    db.close()
