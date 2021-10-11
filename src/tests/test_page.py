@@ -3,7 +3,6 @@ import src.database_access
 from src.User import *
 from Profile.Profile import *
 from src.Page import *
-from src.JobExperience import *
 
 
 # Does initial setup before any test runs
@@ -233,6 +232,7 @@ class TestProfileControls:
             not unfinishedprofile.isComplete()
         )
 
+
     def testEditComplete(self):
         unfinishedprofile = Profile("user", None, None, None, None, None)
         unfinishedprofile.set_title("title", db)
@@ -256,3 +256,4 @@ def teardown_module():
     db.delete_job_experience_table()
     db.delete_jobs_table()
     db.close()
+    
