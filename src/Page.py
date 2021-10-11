@@ -1,5 +1,6 @@
 import re
 from src.database_access import database_access as Database
+from src.JobExperience import *
 from src.User import *
 from src.PostedJob import PostedJob
 from Profile.Profile import *
@@ -517,7 +518,8 @@ class Page:
         university_name = "3 - university name"
         about_me = "4 - about me"
         education = "5 - education"
-        back = "6 - Previous Page"
+        experience = "6 - add experience"
+        back = "7 - Previous Page"
         incomplete = False
         if not profile.isComplete():
             incomplete = True
@@ -533,15 +535,15 @@ class Page:
             if profile.education == None:
                 education += missingTxt
 
-        menu_items = "Please select a field to edit:\n{}\n{}\n{}\n{}\n{}\n{}\nEnter Choice: ".format(
-            title, major, university_name, about_me, education, back)
+        menu_items = "Please select a field to edit:\n{}\n{}\n{}\n{}\n{}\n{}\n{}\nEnter Choice: ".format(
+            title, major, university_name, about_me, education, experience, back)
 
         # display meny and get user input
         print(menu_items)
-        c = validateMenuInput(6)
+        c = validateMenuInput(7)
 
         # back
-        if c == 6:
+        if c == 7:
             if profile.isComplete():
                 self.back_page([self.user, db])
             else:
@@ -567,24 +569,36 @@ class Page:
         elif c == 5:
             education_input = input("Enter your education: ")
             profile.set_education(education_input, db)
-
+        elif c == 6:
+            experiences = getJobInformation(self.user.username, db)
+            if len(experiences) < 3:
+                self.addJobExperiencePage()
+            else:
+                print("Cannot add more than 3 experiences")
         # If the user just completed their profile, send them to profile screen
         if incomplete and profile.isComplete():
             self.printUserProfile(self.user, db)
             return
 
-        if c in range(1, 6):
+        if c in range(1, 7):
             self.editProfilePage(profile, db)
+
+    def addJobExperiencePage(self):
+        title = input("job title: ")
+        employer = input("employer: ")
+        date_start = input("start date (MM-DD-YYYY): ")
+        date_end = input("end date (MM-DD-YYYY: ")
+        location = input("location: ")
+        description = input("description: ")
+        experience = JobExperience(
+            self.user.username, title, employer, date_start, date_end, location, description)
+        experience.DbAddJobExperience(db)
 
     # Requires Database and User object, will print out full profile.
     def printUserProfile(self, user: User, db: database_access):
-        jobQueryString = '''
-        SELECT *
-        FROM job_experience
-        WHERE username = ?
-        '''
+
         profileInformation = getProfile(user.username, db)
-        jobInformation = db.execute(jobQueryString, [user.username])
+        jobInformation = getJobInformation(user.username, db)
         if not profileInformation.isComplete():
             self.editProfilePage(profileInformation, db)
             return
@@ -601,12 +615,12 @@ class Page:
         if len(jobInformation) > 0:
             print_queue.append('Job Experience')
             for job in jobInformation:
-                print_queue.append('Title: ' + job[0])
-                print_queue.append('Employer: ' + job[1])
-                print_queue.append('Date Started: ' + job[2])
-                print_queue.append('Date Ended: ' + job[3])
-                print_queue.append("Location: " + job[4])
-                print_queue.append('Job Description: \n' + job[5])
+                print_queue.append('Title: ' + job.title)
+                print_queue.append('Employer: ' + job.employer)
+                print_queue.append('Date Started: ' + job.date_start)
+                print_queue.append('Date Ended: ' + job.date_end)
+                print_queue.append("Location: " + job.location)
+                print_queue.append('Job Description: \n' + job.description)
 
         for item in print_queue:
             print(item + '\n')
