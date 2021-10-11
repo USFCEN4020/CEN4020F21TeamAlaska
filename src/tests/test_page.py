@@ -3,6 +3,7 @@ import src.database_access
 from src.User import *
 from Profile.Profile import *
 from src.Page import *
+from src.JobExperience import *
 
 def resetFunctions():
     src.Page.input = input
@@ -186,22 +187,27 @@ class TestRegisterLogin:
 
 class TestProfileControls:
     db = Database('epic4profiletest.sqlite3')
-    user = User("testuser","Password1!","Nathan","Aldino","English",True,True,True,True,db)
+    src.Page.db = db
+    credentials = ("testuser", "Password1!", "Nathan", "Aldino")
+    user = create_user(credentials,db)
     unfinishedprofile = Profile(None,None,None,None,None,None)
     
-    
     def testProfilePrint(self):
-        #pull a Profile object from SQL and compare with test profile to see if it will print the exact data
+        getProfile("testuser",db)
         profile = Profile("testuser", "sir", "general", "university","i code","no education")
-        username = "testuser"
-        #db.execute("INSERT INTO profile (username) VALUES ('testuser')" )
         profile.set_title(profile.title,db)
         profile.set_major(profile.major,db)
         profile.set_university_name(profile.university_name,db)
         profile.set_about_me(profile.about_me,db)
         profile.set_education(profile.education,db)
         comparison = getProfile("testuser",db)
-        assert True#comparison == self.profile
+        assert profile == comparison
+
+    def testJobExperiencePrint(self):
+        testjobexp = JobExperience("testuser","publix1","publix","today","tomrrow","here","cashier")
+        testjobexp.DbAddJobExperience(db)
+        alljobs = getJobInformation("testuser",db)
+        assert alljobs[0] == testjobexp
 
     def testEditIfIncomplete(self):
         self.unfinishedprofile.set_title("mr",db)
@@ -217,4 +223,9 @@ class TestProfileControls:
         self.unfinishedprofile.set_education("elementary school",db)
         assert self.unfinishedprofile.isComplete
 
-
+    def testCleanUp(self):  # Teardown
+        self.db.delete_profile_table
+        self.db.delete_users_table
+        self.db.delete_job_experience_table
+        self.db.close()
+        assert True == True
