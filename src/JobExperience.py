@@ -1,6 +1,6 @@
 from typing import List
 
-from database_access import database_access
+from src.database_access import database_access
 
 
 class JobExperience:
@@ -12,6 +12,19 @@ class JobExperience:
         self.date_end = date_end
         self.location = location
         self.description = description
+
+    def DbAddJobExperience(self, db: database_access) -> None:
+        sql = "INSERT INTO job_experience VALUES (?,?,?,?,?,?,?)"
+        params = [
+            self.username,
+            self.title,
+            self.employer,
+            self.date_start,
+            self.date_end,
+            self.location,
+            self.description
+        ]
+        db.execute(sql, params)
 
 
 def getJobInformation(username: str, db: database_access) -> List[JobExperience]:

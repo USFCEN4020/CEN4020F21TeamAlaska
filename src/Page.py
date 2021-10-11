@@ -518,7 +518,8 @@ class Page:
         university_name = "3 - university name"
         about_me = "4 - about me"
         education = "5 - education"
-        back = "6 - Previous Page"
+        experience = "6 - add experience"
+        back = "7 - Previous Page"
         incomplete = False
         if not profile.isComplete():
             incomplete = True
@@ -534,15 +535,15 @@ class Page:
             if profile.education == None:
                 education += missingTxt
 
-        menu_items = "Please select a field to edit:\n{}\n{}\n{}\n{}\n{}\n{}\nEnter Choice: ".format(
-            title, major, university_name, about_me, education, back)
+        menu_items = "Please select a field to edit:\n{}\n{}\n{}\n{}\n{}\n{}\n{}\nEnter Choice: ".format(
+            title, major, university_name, about_me, education, experience, back)
 
         # display meny and get user input
         print(menu_items)
-        c = validateMenuInput(6)
+        c = validateMenuInput(7)
 
         # back
-        if c == 6:
+        if c == 7:
             if profile.isComplete():
                 self.back_page([self.user, db])
             else:
@@ -568,14 +569,30 @@ class Page:
         elif c == 5:
             education_input = input("Enter your education: ")
             profile.set_education(education_input, db)
-
+        elif c == 6:
+            experiences = getJobInformation(self.user.username, db)
+            if len(experiences) < 3:
+                self.addJobExperiencePage()
+            else:
+                print("Cannot add more than 3 experiences")
         # If the user just completed their profile, send them to profile screen
         if incomplete and profile.isComplete():
             self.printUserProfile(self.user, db)
             return
 
-        if c in range(1, 6):
+        if c in range(1, 7):
             self.editProfilePage(profile, db)
+
+    def addJobExperiencePage(self):
+        title = input("job title: ")
+        employer = input("employer: ")
+        date_start = input("start date (MM-DD-YYYY): ")
+        date_end = input("end date (MM-DD-YYYY: ")
+        location = input("location: ")
+        description = input("description: ")
+        experience = JobExperience(
+            self.user.username, title, employer, date_start, date_end, location, description)
+        experience.DbAddJobExperience(db)
 
     # Requires Database and User object, will print out full profile.
     def printUserProfile(self, user: User, db: database_access):
