@@ -193,15 +193,13 @@ class TestProfileControls:
     def testProfilePrint(self):
         #pull a Profile object from SQL and compare with test profile to see if it will print the exact data
         profile = Profile("testuser", "sir", "general", "university","i code","no education")
-        username = "testuser"
-        #db.execute("INSERT INTO profile (username) VALUES ('testuser')" )
         profile.set_title(profile.title,db)
         profile.set_major(profile.major,db)
         profile.set_university_name(profile.university_name,db)
         profile.set_about_me(profile.about_me,db)
         profile.set_education(profile.education,db)
         comparison = getProfile("testuser",db)
-        assert True#comparison == self.profile
+        assert profile.isComplete
 
     def testEditIfIncomplete(self):
         self.unfinishedprofile.set_title("mr",db)
