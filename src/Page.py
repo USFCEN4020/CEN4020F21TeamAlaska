@@ -285,7 +285,7 @@ class Page:
         # Previous Page
         if choice == 10:
             self.back_page()
-    
+
     def play_video_page(self):
         print("Video is now playing...")
         # back_option prompts the user to enter 0 if they wanna go back
