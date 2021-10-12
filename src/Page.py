@@ -486,7 +486,7 @@ class Page:
     def register(self):
         # checking the number of accounts already registered
         num_accounts = len(db.execute('SELECT * FROM users'))
-        if int(num_accounts) >= 5:
+        if int(num_accounts) >= 10:
             print("All permitted accounts have been created, please come backlater\n")
         else:
             # if a new user is allowed to register, it prompts them to enter credentials
