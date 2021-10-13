@@ -97,6 +97,7 @@ class Page:
                 print("Thank you for using InCollege!")
                 return 0
         else:
+            self.pendingFriendRequests(db) # Preliminary pending friend request check, not a page.
             c = -1
             print(
                 "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Exit\nEnter a choice: ")
@@ -632,3 +633,56 @@ class Page:
             self.editProfilePage(profileInformation, db)
         elif c == 2:
             self.back_page()
+    
+    def myNetwork(self, db): # show_my_network will lead here, print all friends.
+        print("Welcome to the your friends, where you hopefully have some.\n")
+        sql_for_all_friends = '''
+        SELECT * FROM user_friends WHERE username1 = ? or username2 = ? AND status == Approved
+        '''
+        res = db.execute(sql_for_all_friends, [self.user.username, self.user.username])
+        for item in res:
+            print(item + '\n')
+        if not len(item):
+            print("Sorry you have no friends, your mother did warn you.")
+    
+    def pendingFriendRequests(self,db): # call this to check right when user logs in before main page.
+        sql_for_pending_requests = '''
+        SELECT * FROM user_friends as U WHERE (U.username1 = ? or U.username2 = ?) AND U.status = "Pending"
+        '''
+        res = db.execute(sql_for_pending_requests, [self.user.username, self.user.username])
+        if len(res):
+            for request in res:
+                requester = ""
+                if request[0] != self.user.username:
+                    requester = request[0]
+                else:
+                    requester = request[1]
+                databaseStatusUpdate = ''
+                position = -1
+                while(True): # This workflow remains untested.
+                    print("Friend request from " + requester + '. Enter 1 to accept or 2 to decline.\n')
+                    userResponse = input()
+                    if userResponse == '1':
+                        databaseStatusUpdate = "Approved"
+                        position = 1
+                        break
+                    elif userResponse == '2':
+                        databaseStatusUpdate = "Rejected"
+                        position = 2
+                        break
+                    else:
+                        print("Please enter a valid response.")
+                status_change_sql = '''
+                UPDATE user_friends
+                SET username1 = ?
+                    username2 = ?
+                WHERE
+                    username1 = ? AND username2 = ?
+                '''
+                args = ''
+                if position == 1:
+                    args = [requester, self.user.username] * 2
+                elif position == 2:
+                    args = [self.user.username, requester] * 2
+
+                db.execute(status_change_sql,args)

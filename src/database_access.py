@@ -52,6 +52,17 @@ class database_access:
             FOREIGN KEY (username) REFERENCES users (username)
             )
         '''
+        # Pending, Approved, Rejected are the 3 statuses we should care about.
+        sql_create_user_friend_relation = '''
+            CREATE TABLE IF NOT EXISTS user_friends (
+            username1 text NOT NULL,
+            username2 text NOT NULL,
+            status text NOT NULL,
+            PRIMARY KEY(username1, username2),
+            FOREIGN KEY (username1) REFERENCES users (username),
+            FOREIGN KEY (username2) REFERENCES users (username)
+            )
+        '''
 
         c = self.db.cursor()
         c.execute(sql_create_users_table)
@@ -59,6 +70,7 @@ class database_access:
         # self.db.commit()
         c.execute(sql_create_profile_table)
         c.execute(sql_create_user_job_experience_table)
+        c.execute(sql_create_user_friend_relation)
         self.db.commit()
 
     # To select and print all tables
@@ -94,6 +106,14 @@ class database_access:
         for row in data:
             print(row)
 
+    def print_all_friend_relations(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM user_friends')
+        # view all selected jobs
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
     # if you want to clear the table(s)
     def delete_users_table(self):
         c = self.db.cursor()
@@ -116,6 +136,12 @@ class database_access:
     def delete_jobs_table(self):
         c = self.db.cursor()
         sql = 'DELETE FROM jobs'
+        c.execute(sql)
+        self.db.commit()
+
+    def delete_user_friends(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM user_friends'
         c.execute(sql)
         self.db.commit()
 
