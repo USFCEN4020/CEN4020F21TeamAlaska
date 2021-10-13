@@ -674,15 +674,14 @@ class Page:
                         print("Please enter a valid response.")
                 status_change_sql = '''
                 UPDATE user_friends
-                SET username1 = ?
-                    username2 = ?
+                SET status = ?
                 WHERE
                     username1 = ? AND username2 = ?
                 '''
                 args = ''
                 if position == 1:
-                    args = [requester, self.user.username] * 2
+                    args = [databaseStatusUpdate, requester, self.user.username]
                 elif position == 2:
-                    args = [self.user.username, requester] * 2
+                    args = [databaseStatusUpdate, self.user.username, requester]
 
                 db.execute(status_change_sql,args)
