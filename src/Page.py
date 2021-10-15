@@ -720,8 +720,9 @@ class Page:
         def searchByLastName():
             name = input('Please input the lastname to search for:\n')
             search_by_lastname_sql = '''
-            SELECT * FROM users WHERE lower(lastname) = lower(?)'''
-            res = db.execute(search_by_lastname_sql, [name])
+            SELECT * FROM users WHERE lower(lastname) = lower(?) and username != ?'''
+            res = db.execute(search_by_lastname_sql, [
+                             name, self.user.username])
             if len(res):
                 res = getUserSelection(res)
                 if res:
