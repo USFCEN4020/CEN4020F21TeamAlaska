@@ -689,14 +689,16 @@ class Page:
             i = 1
             print("Results:\n")
             for user in listUsers:
-                if(user[0] != self.user.username):
-                    print(str(i) + ': ' + ' Username: ' + str(user[0]) + ' Firstname: ' +  str(user[2] + ' Lastname: ' + str(user[3])))
-                    i = i + 1
-                if i == 1:
-                    print("No Results were found using that Query.\n")
-                    return False
+                if(user[0] == self.user.username):
+                    listUsers.remove(user)
+            for user in listUsers:
+                print(str(i) + ': ' + ' Username: ' + str(user[0]) + ' Firstname: ' +  str(user[2] + ' Lastname: ' + str(user[3])))
+                i = i + 1
+            if i == 1:
+                print("No Results were found using that Query.\n")
+                return False
             while(True):
-                answer = input('Please input the number of the user to add as a friend, input "x" to cancel.')
+                answer = input('\nPlease input the number of the user to add as a friend, input "x" to cancel.')
                 if ((answer.lower()) == 'x'):
                     return None
                 else:
@@ -724,10 +726,44 @@ class Page:
             return False
 
         def searchByUniversity():
-            return 'yay'
+            uni = input('Please input the University name to search for:\n')
+            search_by_university_sql = '''
+            SELECT * 
+            FROM users 
+            WHERE username IN (
+                SELECT username
+                FROM profile
+                WHERE lower(university_name) = lower(?));
+            '''
+            res = db.execute(search_by_university_sql, [uni])
+            if len(res):
+                res = getUserSelection(res)
+                if res:
+                    return sendFriendRequest(res)
+                else:
+                    return False
+            print('No results were found using that query.\n')
+            return False
 
         def searchByMajor():
-            return 'yay'
+            major = input('Please input the Major to search for:\n')
+            search_by_major_sql = '''
+            SELECT * 
+            FROM users 
+            WHERE username IN (
+                SELECT username
+                FROM profile
+                WHERE lower(major) = lower(?));
+            '''
+            res = db.execute(search_by_major_sql, [major])
+            if len(res):
+                res = getUserSelection(res)
+                if res:
+                    return sendFriendRequest(res)
+                else:
+                    return False
+            print('No results were found using that query.\n')
+            return False
 
         def sendFriendRequest(username):
             add_friend_sql = '''
@@ -738,7 +774,6 @@ class Page:
                 print("Friend Request Sent")
                 return True
             except Exception as error:
-                print('FOR TESTING ONLY REMOVE ME: ' + str(error))
                 print('Friend Request Already Exists.')
                 return False
             
