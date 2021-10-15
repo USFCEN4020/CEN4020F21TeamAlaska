@@ -1,5 +1,6 @@
 from src.database_access import database_access as Database
 
+
 class User:
     def __init__(
         self,
@@ -64,6 +65,16 @@ class User:
 def get_user_by_login(username: str, password: str, db: Database) -> User:
     find_user = 'SELECT * FROM users WHERE username = ? AND password = ?'
     res = db.execute(find_user, (username, password))
+    if res:
+        res = res[0]
+        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], True, db)
+    else:
+        return None
+
+
+def get_user_by_username(username: str, db: Database) -> User:
+    find_user = 'SELECT * FROM users WHERE username = ?'
+    res = db.execute(find_user, [username])
     if res:
         res = res[0]
         return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], True, db)
