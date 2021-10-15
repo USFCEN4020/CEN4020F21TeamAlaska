@@ -155,7 +155,7 @@ class TestRegisterLogin:
         def mock_input(s):
             return input_values.pop(0)
         src.Page.input = mock_input
-        for i in range(0, 4):
+        for i in range(0, 11):
             input_values = [
                 'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i)]
             self.page.register()
@@ -178,19 +178,13 @@ class TestRegisterLogin:
         src.database_access.print = lambda s: output.append(s)
         self.db.print_users()
         src.database_access.print = print
-        assert output == [
-            ('randion', 'Password#1', 'Robby',
-             'Ybbor', 'english', 1, 1, 1),
-            ('randion0', 'Password#10', 'Robby0',
-             'Ybbor0', 'english', 1, 1, 1),
-            ('randion1', 'Password#11', 'Robby1',
-             'Ybbor1', 'english', 1, 1, 1),
-            ('randion2', 'Password#12', 'Robby2',
-             'Ybbor2', 'english', 1, 1, 1),
-            ('randion3', 'Password#13', 'Robby3',
-             'Ybbor3', 'english', 1, 1, 1),
+        expected = [("randion", "Password#1", "Robby",
+                     "Ybbor", "english", 1, 1, 1)]
+        for i in range(0, 9):
+            expected.append((
+                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), "english", 1, 1, 1))
 
-        ]
+        assert output == expected
 
     def testCleanUp(self):  # Teardown
         self.db.delete_users_table()
@@ -232,7 +226,6 @@ class TestProfileControls:
             not unfinishedprofile.isComplete()
         )
 
-
     def testEditComplete(self):
         unfinishedprofile = Profile("user", None, None, None, None, None)
         unfinishedprofile.set_title("title", db)
@@ -256,4 +249,3 @@ def teardown_module():
     db.delete_job_experience_table()
     db.delete_jobs_table()
     db.close()
-    
