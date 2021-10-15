@@ -68,6 +68,9 @@ class Page:
             },
             16: {
                 "view": self.add_friend_page
+            },
+            17: {
+                "view": self.myNetwork_page
             }
         }
 
@@ -100,11 +103,12 @@ class Page:
                 print("Thank you for using InCollege!")
                 return 0
         else:
-            self.pendingFriendRequests(db) # Preliminary pending friend request check, not a page.
+            # Preliminary pending friend request check, not a page.
+            self.pendingFriendRequests(db)
             c = -1
             print(
-                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Exit\nEnter a choice: ")
-            c = validateMenuInput(8)
+                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Exit\nEnter a choice: ")
+            c = validateMenuInput(9)
             if c == 1:
                 self.page_stack.append(5)
                 self.post_job_page()
@@ -123,10 +127,13 @@ class Page:
             if c == 6:
                 self.page_stack.append(14)
                 self.printUserProfile(self.user, db)
-            if c== 7:
+            if c == 7:
                 self.page_stack.append(16)
                 self.add_friend_page(db)
             if c == 8:
+                self.page_stack.append(17)
+                self.myNetwork_page()
+            if c == 9:
                 print("Thank you for using InCollege!")
                 return 0
 
@@ -293,7 +300,7 @@ class Page:
         # Previous Page
         if choice == 10:
             self.back_page()
-    
+
     def play_video_page(self):
         print("Video is now playing...")
         # back_option prompts the user to enter 0 if they wanna go back
@@ -631,27 +638,63 @@ class Page:
 
         for item in print_queue:
             print(item + '\n')
+        if user.username == self.user.username:
+            print(
+                "Please select an option below:\n1 - Edit Profile\n2 - Previous Page\nEnter Choice: ")
+            c = validateMenuInput(2)
+            if c == 1:
+                self.page_stack.append(15)
+                self.editProfilePage(profileInformation, db)
+            elif c == 2:
+                self.back_page()
+        else:
+            print("Please select an option below:\n1 - Previous Page\nEnter Choice: ")
+            c = validateMenuInput(1)
+            if c == 1:
+                self.back_page()
 
-        print("Please select an option below:\n1 - Edit Profile\n2 - Previous Page\nEnter Choice: ")
-        c = validateMenuInput(2)
-        if c == 1:
-            self.page_stack.append(15)
-            self.editProfilePage(profileInformation, db)
-        elif c == 2:
-            self.back_page()
-    
-    def myNetwork_page(self, db): # show_my_network will lead here, print all friends.
+    # show_my_network will lead here, print all friends.
+    def myNetwork_page(self):
         print("Welcome to the your friends, where you hopefully have some.\n")
         sql_for_all_friends = '''
-        SELECT * FROM user_friends WHERE username1 = ? or username2 = ? AND status == Approved
+        SELECT * FROM user_friends WHERE username1 = ? or username2 = ? AND status = "Approved"
         '''
-        res = db.execute(sql_for_all_friends, [self.user.username, self.user.username])
+        res = db.execute(sql_for_all_friends, [
+                         self.user.username, self.user.username])
+        # Get usernames excluding self
+        friendUsernames = set()
         for item in res:
-            print(item + '\n')
-        if not len(item):
+            friendUsernames.add(item[0])
+            friendUsernames.add(item[1])
+        friendUsernames.remove(self.user.username)
+        if not len(friendUsernames):
             print("Sorry you have no friends, your mother did warn you.")
-    
-    def pendingFriendRequests(self,db): # call this to check right when user logs in before main page, if our user is username2 that means its a request.
+
+        # set of friends with complete profiles
+        hasProfile = []
+        for friend in friendUsernames:
+            profile = getProfile(friend, db)
+            if profile.isComplete():
+                hasProfile.append(profile)
+
+        print("Select one of the users below to view profile.")
+        menu = ""
+        for i, profile in enumerate(hasProfile):
+            menu += "{} - {}\n".format(i+1, profile.username)
+        menu += "{} - Previous Page\nEnter a number: ".format(
+            len(hasProfile)+1)
+
+        print(menu)
+        c = validateMenuInput(len(hasProfile) + 1)
+        if c == len(hasProfile) + 1:
+            self.back_page()
+        else:
+            user = get_user_by_username(hasProfile[c-1].username, db)
+            self.page_stack.append(14)
+            self.printUserProfile(user, db)
+    # call this to check right when user logs in before main page, if our user is username2 that means its a request.
+
+    def pendingFriendRequests(self, db):
         sql_for_pending_requests = '''
         SELECT * FROM user_friends as U WHERE U.username2 = ? AND U.status = "Pending"
         '''
@@ -660,8 +703,10 @@ class Page:
             for request in res:
                 requester = request[0]
                 databaseStatusUpdate = ''
-                while(True): # This workflow remains untested.
-                    print("Friend request from " + requester + '. Enter 1 to accept or 2 to decline.\n') # can query user table using this name to return the fname and lname here
+                while(True):  # This workflow remains untested.
+                    # can query user table using this name to return the fname and lname here
+                    print("Friend request from " + requester +
+                          '. Enter 1 to accept or 2 to decline.\n')
                     userResponse = input()
                     if userResponse == '1':
                         databaseStatusUpdate = "Approved"
@@ -679,12 +724,12 @@ class Page:
                 '''
                 args = [databaseStatusUpdate, requester, self.user.username]
                 try:
-                    db.execute(status_change_sql,args)
+                    db.execute(status_change_sql, args)
                     print("Successfully saved your changes!\n")
                 except:
                     print("Failed to accept or reject request.\n")
-    
-    def add_friend_page(self,db):
+
+    def add_friend_page(self, db):
         def getUserSelection(listUsers):
             i = 1
             print("Results:\n")
@@ -692,13 +737,15 @@ class Page:
                 if(user[0] == self.user.username):
                     listUsers.remove(user)
             for user in listUsers:
-                print(str(i) + ': ' + ' Username: ' + str(user[0]) + ' Firstname: ' +  str(user[2] + ' Lastname: ' + str(user[3])))
+                print(str(i) + ': ' + ' Username: ' +
+                      str(user[0]) + ' Firstname: ' + str(user[2] + ' Lastname: ' + str(user[3])))
                 i = i + 1
             if i == 1:
                 print("No Results were found using that Query.\n")
                 return False
             while(True):
-                answer = input('\nPlease input the number of the user to add as a friend, input "x" to cancel.')
+                answer = input(
+                    '\nPlease input the number of the user to add as a friend, input "x" to cancel.')
                 if ((answer.lower()) == 'x'):
                     return None
                 else:
@@ -710,7 +757,7 @@ class Page:
                         return listUsers[answer - 1][0]
                     except:
                         print("Please enter a valid whole number")
-                
+
         def searchByLastName():
             name = input('Please input the lastname to search for:\n')
             search_by_lastname_sql = '''
@@ -770,13 +817,14 @@ class Page:
             INSERT INTO user_friends VALUES (?,?,?)
             '''
             try:
-                db.execute(add_friend_sql,[self.user.username, username, 'Pending'])
+                db.execute(add_friend_sql, [
+                           self.user.username, username, 'Pending'])
                 print("Friend Request Sent")
                 return True
             except Exception as error:
                 print('Friend Request Already Exists.')
                 return False
-            
+
         while(True):
             print("Would you like to search by:\n1 - Lastname\n2 - University\n3 - Major")
             answer = input()
@@ -793,7 +841,8 @@ class Page:
                 if result:
                     break
                 else:
-                    cont = input("Would you like to search again?\nInput 1 to continue, anything else to quit")
+                    cont = input(
+                        "Would you like to search again?\nInput 1 to continue, anything else to quit")
                     if cont != '1':
                         break
         # add self to stack.
