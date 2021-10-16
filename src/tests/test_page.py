@@ -291,6 +291,24 @@ class TestNetworkPage:
             "1 - marvelo\n2 - Previous Page\nEnter a number: ",
         ]
 
+    def testNoFriends(self):
+        input_values = ['0']
+        output = []
+        credentials = ("garvelo", "Password1!",
+                       "Ganiel", "Arvelo")
+        self.page.user = create_user(credentials, db)
+
+        def mock_input(s):
+            return input_values.pop(0)
+        src.helpers.input = mock_input
+        src.Page.print = lambda s: output.append(s)
+        self.page.myNetwork_page()
+        assert output == [
+            "Welcome to the your friends, where you hopefully have some.\n",
+            "Sorry you have no friends, your mother did warn you.",
+            "1 - Previous Page\nEnter a number: "
+        ]
+
 
 # Runs after every test in this file has finished running
 def teardown_module():
