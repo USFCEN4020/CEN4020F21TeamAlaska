@@ -3,6 +3,7 @@ import src.database_access
 from src.User import *
 from Profile.Profile import *
 from src.Page import *
+import src.helpers
 
 
 # Does initial setup before any test runs
@@ -280,7 +281,7 @@ class TestNetworkPage:
 
         def mock_input(s):
             return input_values.pop(0)
-        src.Page.input = mock_input
+        src.helpers.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.myNetwork_page()
         resetFunctions()

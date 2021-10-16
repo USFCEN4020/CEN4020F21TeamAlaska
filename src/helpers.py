@@ -2,7 +2,7 @@
 def validateMenuInput(maxNumber: int) -> int:
     while(True):
         try:
-            c = int(input())
+            c = int(input(""))
             if(c in range(0, maxNumber + 1)):
                 return c
             else:
