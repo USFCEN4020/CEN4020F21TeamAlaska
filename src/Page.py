@@ -688,7 +688,7 @@ class Page:
         c = validateMenuInput(len(hasProfile) + 1)
         if c == len(hasProfile) + 1:
             self.back_page()
-        else:
+        elif (c > 0):
             user = get_user_by_username(hasProfile[c-1].username, db)
             self.page_stack.append(14)
             self.printUserProfile(user, db)
@@ -729,7 +729,7 @@ class Page:
                 except:
                     print("Failed to accept or reject request.\n")
 
-    def add_friend_page(self, db):
+    def add_friend_page(self):
         def getUserSelection(listUsers):
             i = 1
             print("Results:\n")

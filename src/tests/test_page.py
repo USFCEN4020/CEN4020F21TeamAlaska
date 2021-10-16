@@ -12,6 +12,7 @@ def setup_module():
     src.Page.db = db
     db.delete_profile_table()
     db.delete_users_table()
+    db.delete_user_friends()
     db.delete_job_experience_table()
     db.delete_jobs_table()
 
@@ -192,7 +193,7 @@ class TestRegisterLogin:
 
 
 class TestProfileControls:
-    def testSetUp(self):
+    def SetUp(self):
         credentials = ("testuser", "Password1!",
                        "Nathan", "Aldino")
         create_user(credentials, db)
@@ -235,10 +236,59 @@ class TestProfileControls:
         unfinishedprofile.set_education("elementary school", db)
         assert unfinishedprofile.isComplete()
 
-    def testCleanUp(self):
+    def CleanUp(self):
         db.delete_profile_table()
         db.delete_users_table()
         db.delete_job_experience_table()
+
+
+class TestNetworkPage:
+    page = src.Page.Page()
+
+    def testSetUp(self):
+        users = [
+            ("darvelo", "Password1!",
+                "Daniel", "Arvelo"),
+            ("marvelo", "Password1!", "Maniel", "Arvelo"),
+            ("rarvelo", "Password1!", "Raniel", "Arvelo")
+        ]
+        for i in range(len(users)):
+            user = create_user(users[i], db)
+            if user.username == users[0][0]:
+                self.page.user = user
+            else:
+                # make friends with first user
+                sql = '''
+        INSERT INTO user_friends VALUES (?,?,?)
+        '''
+                db.execute(sql, [self.page.user.username,
+                                 users[i][0], 'Approved'])
+            # Create profiles for all but last user
+            if i != len(users) - 1:
+                profile = getProfile(users[i][0], db)
+                profile.set_about_me("test about me {}".format(i), db)
+                profile.set_education("test education {}".format(i), db)
+                profile.set_major("test major {}".format(i), db)
+                profile.set_title("test title {}".format(i), db)
+                profile.set_university_name("test university {}".format(i), db)
+
+    def testMissingProfile(self):
+        input_values = ['0']
+        output = []
+
+        self.page.user = get_user_by_username("darvelo", db)
+
+        def mock_input(s):
+            return input_values.pop(0)
+        src.Page.input = mock_input
+        src.Page.print = lambda s: output.append(s)
+        self.page.myNetwork_page()
+        resetFunctions()
+        assert output == [
+            "Welcome to the your friends, where you hopefully have some.\n",
+            "Select one of the users below to view profile.",
+            "1 - marvelo\n2 - Previous Page\nEnter a number: ",
+        ]
 
 
 # Runs after every test in this file has finished running
@@ -246,6 +296,7 @@ def teardown_module():
     db = Database('testing.sqlite3')
     db.delete_profile_table()
     db.delete_users_table()
+    db.delete_user_friends()
     db.delete_job_experience_table()
     db.delete_jobs_table()
     db.close()
