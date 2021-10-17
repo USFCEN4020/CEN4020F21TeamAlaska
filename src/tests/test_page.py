@@ -303,6 +303,7 @@ class TestNetworkPage:
         src.helpers.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.myNetwork_page()
+        resetFunctions()
         assert output == [
             "Welcome to the your friends, where you hopefully have some.\n",
             "Sorry you have no friends, your mother did warn you.",
@@ -319,20 +320,20 @@ class TestFriends:
         mary = getProfile("mary",db)
         mary.set_about_me("test about me", db)
         mary.set_education("test education", db)
-        mary.set_major("test major", db)
+        mary.set_major("major123", db)
         mary.set_title("test title", db)
-        mary.set_university_name("test university", db)
+        mary.set_university_name("university123", db)
 
     #eric sends FR to john and gets accepted by john
     def testPendingRequest(self):
         db.execute('''INSERT INTO user_friends VALUES (?,?,?)''', ['eric', self.page.user.username , 'Pending'])
-        input = ['1']
+        input = ["1"]
         output = []
         def mock_input(s):
             return input.pop(0)
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
-        self.page.pendingFriendRequests(self,db)
+        self.page.pendingFriendRequests(db)
         resetFunctions()
         assert output == [
             "Friend request from eric. Enter 1 to accept or 2 to decline.\n",
@@ -341,34 +342,27 @@ class TestFriends:
     
     #searching for mary via university
     def testSearchUni(self):
-        input = ["2","test university","1"]
+        input = ["university123","1"]
         output = []
         def mock_input(s):
             return input.pop(0)
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
-        self.page.add_friend_page(self)
+        self.page.searchByUniversity()
         resetFunctions()
-        assert output == True
-        
-        #[
-        #    "Would you like to search by:\n1 - Lastname\n2 - University\n3 - Major",
-        #    "Results:\n",
-        #    "1: Username: eric Firstname: eric Lastname: smith",
-        #    "\nPlease input the number of the user to add as a friend, input \"x\" to cancel.",
-        #    "Friend Request Sent"
-        #]
-
+        assert output == ['Results:\n', '1:  Username: mary Firstname: Mary Lastname: Smith', 'Friend Request Sent']
+    
+    # searching for mary via major
     def testSearchMajor(self):
-        input = ["3","test major","1"]
+        input = ["major123","1"]
         output = []
         def mock_input(s):
             return input.pop(0)
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
-        self.page.add_friend_page(self)
+        self.page.searchByMajor()
         resetFunctions()
-        assert output == False
+        assert output == ['Results:\n', '1:  Username: mary Firstname: Mary Lastname: Smith', 'Friend Request Already Exists.']
 
 # Runs after every test in this file has finished running
 def teardown_module():
