@@ -711,7 +711,7 @@ class Page:
                     # can query user table using this name to return the fname and lname here
                     print("Friend request from " + requester +
                           '. Enter 1 to accept or 2 to decline.\n')
-                    userResponse = input()
+                    userResponse = input("")
                     if userResponse == '1':
                         databaseStatusUpdate = "Approved"
                         break
@@ -734,111 +734,16 @@ class Page:
                     print("Failed to accept or reject request.\n")
 
     def add_friend_page(self):
-        def getUserSelection(listUsers):
-            i = 1
-            print("Results:\n")
-            for user in listUsers:
-                if(user[0] == self.user.username):
-                    listUsers.remove(user)
-            for user in listUsers:
-                print(str(i) + ': ' + ' Username: ' +
-                      str(user[0]) + ' Firstname: ' + str(user[2] + ' Lastname: ' + str(user[3])))
-                i = i + 1
-            if i == 1:
-                print("No Results were found using that Query.\n")
-                return False
-            while(True):
-                answer = input(
-                    '\nPlease input the number of the user to add as a friend, input "x" to cancel.')
-                if ((answer.lower()) == 'x'):
-                    return None
-                else:
-                    try:
-                        answer = int(answer)
-                        if answer > i - 1 or answer < 1:
-                            print("Please enter a number in the shown range.")
-                            continue
-                        return listUsers[answer - 1][0]
-                    except:
-                        print("Please enter a valid whole number")
-
-        def searchByLastName():
-            name = input('Please input the lastname to search for:\n')
-            search_by_lastname_sql = '''
-            SELECT * FROM users WHERE lower(lastname) = lower(?)'''
-            res = db.execute(search_by_lastname_sql, [name])
-            if len(res):
-                res = getUserSelection(res)
-                if res:
-                    return sendFriendRequest(res)
-                else:
-                    return False
-            print("No results were found using that query.\n")
-            return False
-
-        def searchByUniversity():
-            uni = input('Please input the University name to search for:\n')
-            search_by_university_sql = '''
-            SELECT * 
-            FROM users 
-            WHERE username IN (
-                SELECT username
-                FROM profile
-                WHERE lower(university_name) = lower(?));
-            '''
-            res = db.execute(search_by_university_sql, [uni])
-            if len(res):
-                res = getUserSelection(res)
-                if res:
-                    return sendFriendRequest(res)
-                else:
-                    return False
-            print('No results were found using that query.\n')
-            return False
-
-        def searchByMajor():
-            major = input('Please input the Major to search for:\n')
-            search_by_major_sql = '''
-            SELECT * 
-            FROM users 
-            WHERE username IN (
-                SELECT username
-                FROM profile
-                WHERE lower(major) = lower(?));
-            '''
-            res = db.execute(search_by_major_sql, [major])
-            if len(res):
-                res = getUserSelection(res)
-                if res:
-                    return sendFriendRequest(res)
-                else:
-                    return False
-            print('No results were found using that query.\n')
-            return False
-
-        def sendFriendRequest(username):
-            add_friend_sql = '''
-            INSERT INTO user_friends VALUES (?,?,?)
-            '''
-            try:
-                db.execute(add_friend_sql, [
-                           self.user.username, username, 'Pending'])
-                print("Friend Request Sent")
-                return True
-            except Exception as error:
-                print('Friend Request Already Exists.')
-                return False
-
         while(True):
             print("Would you like to search by:\n1 - Lastname\n2 - University\n3 - Major")
-            answer = input()
+            answer = input("")
             result = None
             if(answer == '1'):
-                result = searchByLastName()
+                result = self.searchByLastName()
             elif(answer == '2'):
-                result = searchByUniversity()
+                result = self.searchByUniversity()
             elif(answer == '3'):
-                result = searchByMajor()
+                result = self.searchByMajor()
             else:
                 print("Please select a valid option.")
             if result is not None:
@@ -851,3 +756,99 @@ class Page:
                         break
         # add self to stack.
         self.home_page()
+    
+    def getUserSelection(self,listUsers):
+        i = 1
+        print("Results:\n")
+        for user in listUsers:
+            if(user[0] == self.user.username):
+                listUsers.remove(user)
+        for user in listUsers:
+            print(str(i) + ': ' + ' Username: ' +
+                    str(user[0]) + ' Firstname: ' + str(user[2] + ' Lastname: ' + str(user[3])))
+            i = i + 1
+        if i == 1:
+            print("No Results were found using that Query.\n")
+            return False
+        while(True):
+            answer = input(
+                '\nPlease input the number of the user to add as a friend, input "x" to cancel.')
+            if ((answer.lower()) == 'x'):
+                return None
+            else:
+                try:
+                    answer = int(answer)
+                    if answer > i - 1 or answer < 1:
+                        print("Please enter a number in the shown range.")
+                        continue
+                    return listUsers[answer - 1][0]
+                except:
+                    print("Please enter a valid whole number")
+
+    def searchByLastName(self):
+        name = input('Please input the lastname to search for:\n')
+        search_by_lastname_sql = '''
+        SELECT * FROM users WHERE lower(lastname) = lower(?)'''
+        res = db.execute(search_by_lastname_sql, [name])
+        if len(res):
+            res = self.getUserSelection(res)
+            if res:
+                return self.sendFriendRequest(res)
+            else:
+                return False
+        print("No results were found using that query.\n")
+        return False
+
+    def searchByUniversity(self):
+        uni = input('Please input the University name to search for:\n')
+        search_by_university_sql = '''
+        SELECT * 
+        FROM users 
+        WHERE username IN (
+            SELECT username
+            FROM profile
+            WHERE lower(university_name) = lower(?));
+        '''
+        res = db.execute(search_by_university_sql, [uni])
+        if len(res):
+            res = self.getUserSelection(res)
+            if res:
+                return self.sendFriendRequest(res)
+            else:
+                return False
+        print('No results were found using that query.\n')
+        return False
+
+    def searchByMajor(self):
+        major = input('Please input the Major to search for:\n')
+        search_by_major_sql = '''
+        SELECT * 
+        FROM users 
+        WHERE username IN (
+            SELECT username
+            FROM profile
+            WHERE lower(major) = lower(?));
+        '''
+        res = db.execute(search_by_major_sql, [major])
+        if len(res):
+            res = self.getUserSelection(res)
+            if res:
+                return self.sendFriendRequest(res)
+            else:
+                return False
+        print('No results were found using that query.\n')
+        return False
+
+    def sendFriendRequest(self,username):
+        add_friend_sql = '''
+        INSERT INTO user_friends VALUES (?,?,?)
+        '''
+        try:
+            db.execute(add_friend_sql, [
+                        self.user.username, username, 'Pending'])
+            print("Friend Request Sent")
+            return True
+        except Exception as error:
+            print('Friend Request Already Exists.')
+            return False
+
