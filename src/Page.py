@@ -129,7 +129,7 @@ class Page:
                 self.printUserProfile(self.user, db)
             if c == 7:
                 self.page_stack.append(16)
-                self.add_friend_page(db)
+                self.add_friend_page()
             if c == 8:
                 self.page_stack.append(17)
                 self.myNetwork_page()
