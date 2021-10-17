@@ -317,12 +317,20 @@ class TestFriends:
         self.page.user = create_user(("john","Password1!","John","Smith"),db)
         create_user(("mary","Password1!", "Mary","Smith"),db)
         create_user(("eric","Password1!","eric","smith"),db)
+        
         mary = getProfile("mary",db)
         mary.set_about_me("test about me", db)
         mary.set_education("test education", db)
-        mary.set_major("major123", db)
+        mary.set_major("test major", db)
         mary.set_title("test title", db)
         mary.set_university_name("university123", db)
+        
+        eric = getProfile("eric",db)
+        eric.set_about_me("test about me", db)
+        eric.set_education("test education", db)
+        eric.set_major("major123", db)
+        eric.set_title("test title", db)
+        eric.set_university_name("test university", db)
 
     #eric sends FR to john and gets accepted by john
     def testPendingRequest(self):
@@ -362,7 +370,8 @@ class TestFriends:
         src.Page.print = lambda s: output.append(s)
         self.page.searchByMajor()
         resetFunctions()
-        assert output == ['Results:\n', '1:  Username: mary Firstname: Mary Lastname: Smith', 'Friend Request Already Exists.']
+        assert output == ['Results:\n', '1:  Username: eric Firstname: eric Lastname: smith', 'Friend Request Sent']
+
 
 # Runs after every test in this file has finished running
 def teardown_module():
