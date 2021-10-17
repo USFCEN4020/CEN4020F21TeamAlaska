@@ -666,21 +666,25 @@ class Page:
         for item in res:
             friendUsernames.add(item[0])
             friendUsernames.add(item[1])
-        friendUsernames.remove(self.user.username)
+        try:
+            friendUsernames.remove(self.user.username)
+        except:
+            pass
+
+        menu = ""
+        hasProfile = []
         if not len(friendUsernames):
             print("Sorry you have no friends, your mother did warn you.")
+        else:
+            # set of friends with complete profiles
+            for friend in friendUsernames:
+                profile = getProfile(friend, db)
+                if profile.isComplete():
+                    hasProfile.append(profile)
 
-        # set of friends with complete profiles
-        hasProfile = []
-        for friend in friendUsernames:
-            profile = getProfile(friend, db)
-            if profile.isComplete():
-                hasProfile.append(profile)
-
-        print("Select one of the users below to view profile.")
-        menu = ""
-        for i, profile in enumerate(hasProfile):
-            menu += "{} - {}\n".format(i+1, profile.username)
+            print("Select one of the users below to view profile.")
+            for i, profile in enumerate(hasProfile):
+                menu += "{} - {}\n".format(i+1, profile.username)
         menu += "{} - Previous Page\nEnter a number: ".format(
             len(hasProfile)+1)
 
@@ -688,12 +692,12 @@ class Page:
         c = validateMenuInput(len(hasProfile) + 1)
         if c == len(hasProfile) + 1:
             self.back_page()
-        else:
+        elif (c > 0):
             user = get_user_by_username(hasProfile[c-1].username, db)
             self.page_stack.append(14)
             self.printUserProfile(user, db)
-    # call this to check right when user logs in before main page, if our user is username2 that means its a request.
 
+    # call this to check right when user logs in before main page, if our user is username2 that means its a request.
     def pendingFriendRequests(self, db):
         sql_for_pending_requests = '''
         SELECT * FROM user_friends as U WHERE U.username2 = ? AND U.status = "Pending"
@@ -729,7 +733,7 @@ class Page:
                 except:
                     print("Failed to accept or reject request.\n")
 
-    def add_friend_page(self, db):
+    def add_friend_page(self):
         def getUserSelection(listUsers):
             i = 1
             print("Results:\n")

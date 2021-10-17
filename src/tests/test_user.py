@@ -31,6 +31,15 @@ def test_get_user_by_login(data):
     assert actual == expected
 
 
+def test_get_user_by_username(data):
+    expected = User("darvelo", "password1!", "daniel", "arvelo", "english",
+                    True, True, True, True, data["db"])
+
+    actual = get_user_by_username(expected.username, expected.db)
+
+    assert actual == expected
+
+
 def test_create_user(data):
     expected = User("randion", "Password1!", "robert", "andion", "english",
                     True, True, True, True, data["db"])
@@ -119,11 +128,11 @@ def test_set_language(data):
     sql = 'SELECT language FROM users WHERE username = ?'
     user = data["user"]
 
-    user.set_language('1') 
+    user.set_language('1')
     language = data["db"].execute(sql, [user.username])[0][0]
     assert language == 'english'
 
-    user.set_language('2') 
+    user.set_language('2')
     language = data["db"].execute(sql, [user.username])[0][0]
     assert language == 'spanish'
 
