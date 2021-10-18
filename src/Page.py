@@ -665,10 +665,10 @@ class Page:
         for item in res:
             friendUsernames.add(item[0])
             friendUsernames.add(item[1])
-        # try:
-        #     friendUsernames.remove(self.user.username)
-        # except:
-        #     pass
+        try:
+            friendUsernames.remove(self.user.username)
+        except:
+            pass
         hasProfile = []
         if not len(friendUsernames):
             print("Sorry you have no friends, your mother did warn you.")
