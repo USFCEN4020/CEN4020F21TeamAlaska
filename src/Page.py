@@ -665,29 +665,41 @@ class Page:
         for item in res:
             friendUsernames.add(item[0])
             friendUsernames.add(item[1])
-        #friendUsernames.remove(self.user.username)
+        try:
+            friendUsernames.remove(self.user.username)
+        except:
+            pass
+        hasProfile = []
         if not len(friendUsernames):
             print("Sorry you have no friends, your mother did warn you.")
+            print("Select one of the options below: ")
+        else:
+            # set of friends with complete profiles
+            for friend in friendUsernames:
+                profile = getProfile(friend, db)
+                if profile.username != self.user.username and profile.isComplete():
+                    hasProfile.append(profile)
 
-        # set of friends with complete profiles
-        hasProfile = []
-        for friend in friendUsernames:
-            profile = getProfile(friend, db)
-            if profile.username != self.user.username:
-                hasProfile.append(profile)
+            sortedSet = list(friendUsernames)
+            sortedSet.sort()
+            friendMenu = "These are your friends:\n"
+            for i, username in enumerate(sortedSet):
+                if username != self.user.username:
+                    friendMenu += "{} - {}\n".format(i+1, username)
+            print(friendMenu)
 
-        print("Select one of the users below to view profile.")
+            print("Select one of the users below to view profile.")
         menu = ""
         for i, profile in enumerate(hasProfile):
             menu += "{} - {}\n".format(i+1, profile.username)
         menu += "{} - Previous Page\nEnter a number: ".format(
             len(hasProfile)+1)
-
         print(menu)
+
         c = validateMenuInput(len(hasProfile) + 1)
         if c == len(hasProfile) + 1:
             self.back_page()
-        else:
+        elif c > 0:
             user = get_user_by_username(hasProfile[c-1].username, db)
             self.page_stack.append(18)
             self.friend_profile_page(user, db)
@@ -696,7 +708,8 @@ class Page:
         sql_for_all_friends = '''
         SELECT * FROM user_friends WHERE (username1 = ? or username2 = ?) AND status = "Approved"
         '''
-        res = db.execute(sql_for_all_friends, [self.user.username, self.user.username])
+        res = db.execute(sql_for_all_friends, [
+                         self.user.username, self.user.username])
         return res
 
     def friend_profile_page(self, user, db):
@@ -710,10 +723,11 @@ class Page:
         if profileInformation.major != None:
             print_queue.append('Major: ' + profileInformation.major)
         if profileInformation.university_name != None:
-            print_queue.append('University: ' + profileInformation.university_name)
+            print_queue.append(
+                'University: ' + profileInformation.university_name)
         if profileInformation.education != None:
             print_queue.append('Information and Education:\n' +
-                           profileInformation.about_me + ' ' + profileInformation.education)
+                               profileInformation.about_me + ' ' + profileInformation.education)
         if len(jobInformation) > 0:
             print_queue.append('Job Experience')
             for job in jobInformation:
@@ -733,12 +747,13 @@ class Page:
             self.back_page()
         if c == 2:
             self.back_page()
-    
+
     def delete_friend(self, user, db):
         delete_friend_sql_query = '''
             DELETE FROM user_friends WHERE (username1 = ? AND username2 = ?) or (username1 = ? AND username2 = ?)
         '''
-        res = db.execute(delete_friend_sql_query, [self.user.username, user.username, user.username, self.user.username])
+        res = db.execute(delete_friend_sql_query, [
+                         self.user.username, user.username, user.username, self.user.username])
 
     def pendingFriendRequests(self, db):
         sql_for_pending_requests = '''
@@ -798,8 +813,8 @@ class Page:
                         break
         # add self to stack.
         self.home_page()
-    
-    def getUserSelection(self,listUsers):
+
+    def getUserSelection(self, listUsers):
         i = 1
         print("Results:\n")
         for user in listUsers:
@@ -807,7 +822,7 @@ class Page:
                 listUsers.remove(user)
         for user in listUsers:
             print(str(i) + ': ' + ' Username: ' +
-                    str(user[0]) + ' Firstname: ' + str(user[2] + ' Lastname: ' + str(user[3])))
+                  str(user[0]) + ' Firstname: ' + str(user[2] + ' Lastname: ' + str(user[3])))
             i = i + 1
         if i == 1:
             print("No Results were found using that Query.\n")
@@ -881,16 +896,15 @@ class Page:
         print('No results were found using that query.\n')
         return False
 
-    def sendFriendRequest(self,username):
+    def sendFriendRequest(self, username):
         add_friend_sql = '''
         INSERT INTO user_friends VALUES (?,?,?)
         '''
         try:
             db.execute(add_friend_sql, [
-                        self.user.username, username, 'Pending'])
+                self.user.username, username, 'Pending'])
             print("Friend Request Sent")
             return True
         except Exception as error:
             print('Friend Request Already Exists.')
             return False
-
