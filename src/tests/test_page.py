@@ -287,6 +287,7 @@ class TestNetworkPage:
         resetFunctions()
         assert output == [
             "Welcome to the your friends, where you hopefully have some.\n",
+            "These are your friends:\n1 - marvelo\n2 - rarvelo\n",
             "Select one of the users below to view profile.",
             "1 - marvelo\n2 - Previous Page\nEnter a number: ",
         ]
@@ -307,36 +308,41 @@ class TestNetworkPage:
         assert output == [
             "Welcome to the your friends, where you hopefully have some.\n",
             "Sorry you have no friends, your mother did warn you.",
+            "Select one of the options below: ",
             "1 - Previous Page\nEnter a number: "
         ]
 
+
 class TestFriends:
     page = src.Page.Page()
-    
+
     def testSetup(self):
-        self.page.user = create_user(("john","Password1!","John","Smith"),db)
-        create_user(("mary","Password1!", "Mary","Smith"),db)
-        create_user(("eric","Password1!","eric","smith"),db)
-        
-        mary = getProfile("mary",db)
+        self.page.user = create_user(
+            ("john", "Password1!", "John", "Smith"), db)
+        create_user(("mary", "Password1!", "Mary", "Smith"), db)
+        create_user(("eric", "Password1!", "eric", "smith"), db)
+
+        mary = getProfile("mary", db)
         mary.set_about_me("test about me", db)
         mary.set_education("test education", db)
         mary.set_major("test major", db)
         mary.set_title("test title", db)
         mary.set_university_name("university123", db)
-        
-        eric = getProfile("eric",db)
+
+        eric = getProfile("eric", db)
         eric.set_about_me("test about me", db)
         eric.set_education("test education", db)
         eric.set_major("major123", db)
         eric.set_title("test title", db)
         eric.set_university_name("test university", db)
 
-    #eric sends FR to john and gets accepted by john
+    # eric sends FR to john and gets accepted by john
     def testPendingRequest(self):
-        db.execute('''INSERT INTO user_friends VALUES (?,?,?)''', ['eric', self.page.user.username , 'Pending'])
+        db.execute('''INSERT INTO user_friends VALUES (?,?,?)''',
+                   ['eric', self.page.user.username, 'Pending'])
         input = ["1"]
         output = []
+
         def mock_input(s):
             return input.pop(0)
         src.Page.input = mock_input
@@ -347,38 +353,44 @@ class TestFriends:
             "Friend request from eric. Enter 1 to accept or 2 to decline.\n",
             "Successfully saved your changes!\n"
         ]
-    
-    #searching for mary via university
+
+    # searching for mary via university
     def testSearchUni(self):
-        input = ["university123","1"]
+        input = ["university123", "1"]
         output = []
+
         def mock_input(s):
             return input.pop(0)
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.searchByUniversity()
         resetFunctions()
-        assert output == ['Results:\n', '1:  Username: mary Firstname: Mary Lastname: Smith', 'Friend Request Sent']
-    
+        assert output == [
+            'Results:\n', '1:  Username: mary Firstname: Mary Lastname: Smith', 'Friend Request Sent']
+
     # searching for mary via major
     def testSearchMajor(self):
-        input = ["major123","1"]
+        input = ["major123", "1"]
         output = []
+
         def mock_input(s):
             return input.pop(0)
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.searchByMajor()
         resetFunctions()
-        assert output == ['Results:\n', '1:  Username: eric Firstname: eric Lastname: smith', 'Friend Request Sent']
+        assert output == [
+            'Results:\n', '1:  Username: eric Firstname: eric Lastname: smith', 'Friend Request Sent']
 
     def delete_users(self):
-        db.execute('''INSERT INTO user_friends VALUES (?,?,?)''', ['dana', self.page.user.username , 'Pending'])
+        db.execute('''INSERT INTO user_friends VALUES (?,?,?)''',
+                   ['dana', self.page.user.username, 'Pending'])
         self.page.delete_friend('dana', db)
         sql_for_all_friends = '''
         SELECT * FROM user_friends WHERE (username1 = ? AND username2 = ?) OR (username1 = ? AND username2 = ?)
         '''
-        res = db.execute(sql_for_all_friends, [self.user.username, 'dana', 'dana', self.user.username])
+        res = db.execute(sql_for_all_friends, [
+                         self.user.username, 'dana', 'dana', self.user.username])
         assert res is None
 
 
