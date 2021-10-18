@@ -665,10 +665,10 @@ class Page:
         for item in res:
             friendUsernames.add(item[0])
             friendUsernames.add(item[1])
-        try:
-            friendUsernames.remove(self.user.username)
-        except:
-            pass
+        # try:
+        #     friendUsernames.remove(self.user.username)
+        # except:
+        #     pass
         hasProfile = []
         if not len(friendUsernames):
             print("Sorry you have no friends, your mother did warn you.")
@@ -684,7 +684,8 @@ class Page:
             sortedSet.sort()
             friendMenu = "These are your friends:\n"
             for i, username in enumerate(sortedSet):
-                friendMenu += "{} - {}\n".format(i+1, username)
+                if username != self.user.username:
+                    friendMenu += "{} - {}\n".format(i+1, username)
             print(friendMenu)
 
             print("Select one of the users below to view profile.")
