@@ -71,6 +71,9 @@ class Page:
             },
             17: {
                 "view": self.myNetwork_page
+            },
+            18: {
+                "view": self.friend_profile_page
             }
         }
 
@@ -656,35 +659,27 @@ class Page:
     # show_my_network will lead here, print all friends.
     def myNetwork_page(self):
         print("Welcome to the your friends, where you hopefully have some.\n")
-        sql_for_all_friends = '''
-        SELECT * FROM user_friends WHERE username1 = ? or username2 = ? AND status = "Approved"
-        '''
-        res = db.execute(sql_for_all_friends, [
-                         self.user.username, self.user.username])
-        # Get usernames excluding self
+        res = self.get_friends(db)
         friendUsernames = set()
+        # pending is being added
         for item in res:
             friendUsernames.add(item[0])
             friendUsernames.add(item[1])
-        try:
-            friendUsernames.remove(self.user.username)
-        except:
-            pass
-
-        menu = ""
-        hasProfile = []
+        #friendUsernames.remove(self.user.username)
         if not len(friendUsernames):
             print("Sorry you have no friends, your mother did warn you.")
-        else:
-            # set of friends with complete profiles
-            for friend in friendUsernames:
-                profile = getProfile(friend, db)
-                if profile.isComplete():
-                    hasProfile.append(profile)
 
-            print("Select one of the users below to view profile.")
-            for i, profile in enumerate(hasProfile):
-                menu += "{} - {}\n".format(i+1, profile.username)
+        # set of friends with complete profiles
+        hasProfile = []
+        for friend in friendUsernames:
+            profile = getProfile(friend, db)
+            if profile.username != self.user.username:
+                hasProfile.append(profile)
+
+        print("Select one of the users below to view profile.")
+        menu = ""
+        for i, profile in enumerate(hasProfile):
+            menu += "{} - {}\n".format(i+1, profile.username)
         menu += "{} - Previous Page\nEnter a number: ".format(
             len(hasProfile)+1)
 
@@ -692,12 +687,59 @@ class Page:
         c = validateMenuInput(len(hasProfile) + 1)
         if c == len(hasProfile) + 1:
             self.back_page()
-        elif (c > 0):
+        else:
             user = get_user_by_username(hasProfile[c-1].username, db)
-            self.page_stack.append(14)
-            self.printUserProfile(user, db)
+            self.page_stack.append(18)
+            self.friend_profile_page(user, db)
 
-    # call this to check right when user logs in before main page, if our user is username2 that means its a request.
+    def get_friends(self, db):
+        sql_for_all_friends = '''
+        SELECT * FROM user_friends WHERE (username1 = ? or username2 = ?) AND status = "Approved"
+        '''
+        res = db.execute(sql_for_all_friends, [self.user.username, self.user.username])
+        return res
+
+    def friend_profile_page(self, user, db):
+        profileInformation = getProfile(user.username, db)
+        jobInformation = getJobInformation(user.username, db)
+        print_queue = []
+        print_queue.append(user.firstname + ' ' +
+                           user.lastname + '\'s Profile')
+        if profileInformation.title != None:
+            print_queue.append('Title: ' + profileInformation.title)
+        if profileInformation.major != None:
+            print_queue.append('Major: ' + profileInformation.major)
+        if profileInformation.university_name != None:
+            print_queue.append('University: ' + profileInformation.university_name)
+        if profileInformation.education != None:
+            print_queue.append('Information and Education:\n' +
+                           profileInformation.about_me + ' ' + profileInformation.education)
+        if len(jobInformation) > 0:
+            print_queue.append('Job Experience')
+            for job in jobInformation:
+                print_queue.append('Title: ' + job.title)
+                print_queue.append('Employer: ' + job.employer)
+                print_queue.append('Date Started: ' + job.date_start)
+                print_queue.append('Date Ended: ' + job.date_end)
+                print_queue.append("Location: " + job.location)
+                print_queue.append('Job Description: \n' + job.description)
+
+        for item in print_queue:
+            print(item + '\n')
+        print("Please select an option below:\n1 - Delete Friend\n2 - Previous Page\nEnter Choice: ")
+        c = validateMenuInput(2)
+        if c == 1:
+            self.delete_friend(user, db)
+            self.back_page()
+        if c == 2:
+            self.back_page()
+    
+    def delete_friend(self, user, db):
+        delete_friend_sql_query = '''
+            DELETE FROM user_friends WHERE (username1 = ? AND username2 = ?) or (username1 = ? AND username2 = ?)
+        '''
+        res = db.execute(delete_friend_sql_query, [self.user.username, user.username, user.username, self.user.username])
+
     def pendingFriendRequests(self, db):
         sql_for_pending_requests = '''
         SELECT * FROM user_friends as U WHERE U.username2 = ? AND U.status = "Pending"

@@ -372,6 +372,15 @@ class TestFriends:
         resetFunctions()
         assert output == ['Results:\n', '1:  Username: eric Firstname: eric Lastname: smith', 'Friend Request Sent']
 
+    def delete_users(self):
+        db.execute('''INSERT INTO user_friends VALUES (?,?,?)''', ['dana', self.page.user.username , 'Pending'])
+        self.page.delete_friend('dana', db)
+        sql_for_all_friends = '''
+        SELECT * FROM user_friends WHERE (username1 = ? AND username2 = ?) OR (username1 = ? AND username2 = ?)
+        '''
+        res = db.execute(sql_for_all_friends, [self.user.username, 'dana', 'dana', self.user.username])
+        assert res is None
+
 
 # Runs after every test in this file has finished running
 def teardown_module():
