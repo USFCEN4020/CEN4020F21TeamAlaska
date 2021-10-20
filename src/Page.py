@@ -357,8 +357,8 @@ class Page:
     def postjob(self):
         # check if there are more than 5 jobs
         numjobs = len(db.execute('SELECT * FROM jobs'))
-        if(numjobs >= 5):
-            print("There are already 5 jobs. Please try again later\n")
+        if(numjobs >= 10):
+            print("There are already 10 jobs. Please try again later\n")
             return False
 
         else:
