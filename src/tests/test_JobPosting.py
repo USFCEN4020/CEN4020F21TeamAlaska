@@ -54,7 +54,7 @@ class TestJobPosting():
         ]
 
     def testJobPostLimit(self):
-        for i in range(1, 4):
+        for i in range(1, 10):
             input_values = [
                 'Worm Farmer' + str(i), 'Farming worms', 'WormsRUs', 'Bikini Bottom', '20000']
 
@@ -73,16 +73,16 @@ class TestJobPosting():
         self.page.postjob()
         resetFunctions()
         assert output == [
-            'There are already 5 jobs. Please try again later\n'
+            'There are already 10 jobs. Please try again later\n'
         ]
 
     def testDatabaseJobPrint(self):
         output = []
         src.database_access.print = lambda s: output.append(s)
         self.db.print_jobs()
-        assert output == [('General Kenobi The Negotiator', 'Worm Farmer', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer0', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer1',
-                                                                                                                                                                                                                                              'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer2', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer3', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
-        src.database_access.print
+        print(output)
+        assert output == [('General Kenobi The Negotiator', 'Worm Farmer', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer0', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer1', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer2', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer3', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer4', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer5', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer6', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer7', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer8', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
+        resetFunctions()
 
     def testCleanUp(self):  # Teardown
         self.db.delete_jobs_table()
