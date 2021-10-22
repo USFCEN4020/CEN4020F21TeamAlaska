@@ -100,9 +100,6 @@ class TestJobPosting():
         src.Job.print = lambda s: output.append(s)
         job.print_job_full()
 
-        print("\n\nOUTPUT\n\n")
-        print(output[0])
-
         expected = ['\n*Worm Farmer Job Posting*\n' +
                     'Job Description: Farming worms\n' +
                     'Location: Bikini Bottom\n' +

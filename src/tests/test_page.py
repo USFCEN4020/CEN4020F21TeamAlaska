@@ -394,6 +394,73 @@ class TestFriends:
         assert res is None
 
 
+class TestJobPages:
+    page = src.Page.Page()
+    page.user = User("darvelo", "", "", "", "", "", "", "", True, db)
+
+    def test_job_page_view_job_no_jobs(self):
+        input_Page = ['1']
+        input_helpers = ['2']
+        output = []
+
+        def mock_input_Page(s):
+            return input_Page.pop(0)
+        src.Page.input = mock_input_Page
+
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ',
+            "sorry, no jobs for you"
+        ]
+
+    def test_job_page_view_job(self):
+        # -- Setup - create jobs, users --
+        input_Page = ['Worm Farmer', 'Farming worms',
+                      'WormsRUs', 'Bikini Bottom', '20000']
+        output = []
+
+        def mock_input_Page(s):
+            return input_Page.pop(0)
+        src.Page.input = mock_input_Page
+
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        self.page.postjob()
+
+        input_Page = ['Worm Farmer 2', 'Farming worms 2',
+                      'WormsRUs 2', 'Bikini Bottom 2', '20000']
+        self.page.postjob()
+
+        # -- end setup --
+        input_Page = ['1', '1']
+        input_helpers = ['2']
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        resetFunctions()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ',
+            "Available Jobs:",
+            "1 - Worm Farmer",
+            "2 - Worm Farmer 2"
+        ]
+
+    def cleanUp(self):
+        db.delete_jobs_table()
+
+
 # Runs after every test in this file has finished running
 def teardown_module():
     db = Database('testing.sqlite3')
