@@ -18,13 +18,13 @@ class database_access:
         )
         '''
         sql_create_jobs_table = ''' CREATE TABLE IF NOT EXISTS jobs (
+            job_id integer PRIMARY KEY,
             username text NOT NULL,
             title text NOT NULL,
             description text NOT NULL,
             employer text NOT NULL,
             location text NOT NULL,
-            salary real NOT NULL,
-            PRIMARY KEY(username,title)
+            salary real NOT NULL
         )
         '''
         sql_create_profile_table = '''

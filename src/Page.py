@@ -1,4 +1,5 @@
 import re
+from src.Job import Job
 from src.database_access import database_access as Database
 from src.JobExperience import *
 from src.User import *
@@ -356,8 +357,8 @@ class Page:
     # function to post a job to the database, returns true if successful, false otherwise
     def postjob(self):
         # check if there are more than 5 jobs
-        numjobs = len(db.execute('SELECT * FROM jobs'))
-        if(numjobs >= 10):
+        jobs = db.execute('SELECT * FROM jobs')
+        if(len(jobs) >= 10):
             print("There are already 10 jobs. Please try again later\n")
             return False
 
@@ -377,17 +378,42 @@ class Page:
                     print("Not a valid number. Try again.")
 
             # insert object member values into database
-            db.execute('INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?)', [
-                       temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
+            db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)', [
+                        temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
 
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
 
     def post_job_page(self):
         if self.user.authorized:
-            self.postjob()
-            # this is to go back a level
-            self.back_option()
+            print('1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ')
+            c = validateMenuInput(3)
+            if c == 1:
+                self.page_stack.append(-1)
+                self.postjob()
+                self.back_option()
+            
+            elif c == 3:
+                self.back_page()
+            
+            elif c == 2:
+                self.page_stack.append(-1)
+                # VIEWING ALREADY EXISTING JOBS
+                jobs = db.execute('SELECT job_id, title FROM jobs')
+                if not jobs:
+                    print('sorry, no jobs for you')
+                    self.back_option()
+                else:
+                    obj = {}
+                    print('Available Jobs:')
+                    for job in jobs:
+                        obj[job[0]] = job[1]
+                        print(f'{job[0]} - {job[1]}')
+                    c2 = int(input("Choose the job you'd like to view: "))
+                    job = Job.get_jobs(c2, db)
+                    job.print_job_full()
+                    self.back_option()
+            
 
     def skills_page(self):
         skill = input(
