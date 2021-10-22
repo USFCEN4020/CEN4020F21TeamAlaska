@@ -139,7 +139,7 @@ class database_access:
     def print_all_interested_jobs(self):
         c = self.db.cursor()
         c.execute('SELECT * FROM user_interested_jobs')
-        # view all selected 
+        # view all selected
         data = c.fetchall()
         for row in data:
             print(row)
@@ -147,7 +147,7 @@ class database_access:
     def print_all_applied_jobs(self):
         c = self.db.cursor()
         c.execute('SELECT * FROM user_applided_jobs')
-        # view all selected 
+        # view all selected
         data = c.fetchall()
         for row in data:
             print(row)

@@ -1,6 +1,7 @@
 from re import subn
 from src.database_access import database_access
 
+
 class Job:
     def __init__(self, id: int, username: str, title: str, description: str, employer: str, location: str, salary: float):
         self.id = id
@@ -35,7 +36,8 @@ class Job:
         my_jobs = list()
         jobs = db.execute(jobQueryString, [user])
         for job in jobs:
-            my_jobs.append(Job(job[0], job[1], job[2], job[3], job[4], job[5], job[6]))
+            my_jobs.append(Job(job[0], job[1], job[2],
+                           job[3], job[4], job[5], job[6]))
         return my_jobs
 
     def print_full_job(self):
@@ -46,10 +48,22 @@ class Job:
             f'Expected Salary: {self.salary}\n' +
             f'Posted By: {self.employer}'
         )
-        
+
     @staticmethod
     def delete_job(id: int, db: database_access):
         delete_query_string = '''
             DELETE FROM jobs WHERE job_id = ?
         '''
         db.execute(delete_query_string, [id])
+
+    def apply_job(self, username, job_id, db: database_access):
+        apply_job_sql = '''
+        INSERT INTO user_applied_jobs VALUES (?,?)
+        '''
+        db.execute(apply_job_sql, [username, job_id])
+
+    def add_interested(self, username, job_id, db: database_access):
+        interested_job_sql = '''
+        INSERT INTO user_interested_jobs VALUES (?,?)
+        '''
+        db.execute(interested_job_sql, [username, job_id])
