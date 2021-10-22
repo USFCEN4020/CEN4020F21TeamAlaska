@@ -64,6 +64,26 @@ class database_access:
             )
         '''
 
+        sql_create_user_interested_job = '''
+            CREATE TABLE IF NOT EXISTS user_interested_job (
+            username text NOT NULL,
+            job_id integer NOT NULL,
+            PRIMARY KEY(username1, username2),
+            FOREIGN KEY (username) REFERENCES users (username),
+            FOREIGN KEY (job_id) REFERENCES jobs (job_id)
+            )
+        '''
+
+        sql_create_user_applied_job = '''
+            CREATE TABLE IF NOT EXISTS user_applied_jobs (
+            username text NOT NULL,
+            job_id integer NOT NULL,
+            status text NOT NULL,
+            PRIMARY KEY(username1, username2),
+            FOREIGN KEY (username) REFERENCES users (username),
+            FOREIGN KEY (job_id) REFERENCES jobs (job_id)
+            )
+        '''
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
@@ -71,6 +91,8 @@ class database_access:
         c.execute(sql_create_profile_table)
         c.execute(sql_create_user_job_experience_table)
         c.execute(sql_create_user_friend_relation)
+        c.execute(sql_create_user_interested_job)
+        c.execute(sql_create_user_applied_job)
         self.db.commit()
 
     # To select and print all tables
@@ -101,7 +123,7 @@ class database_access:
     def print_job_experience(self):
         c = self.db.cursor()
         c.execute('SELECT * FROM job_experience')
-        # view all selected jobs
+        # view all selected job experience
         data = c.fetchall()
         for row in data:
             print(row)
@@ -109,7 +131,23 @@ class database_access:
     def print_all_friend_relations(self):
         c = self.db.cursor()
         c.execute('SELECT * FROM user_friends')
-        # view all selected jobs
+        # view all selected friends
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
+    def print_all_interested_jobs(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM user_interested_jobs')
+        # view all selected 
+        data = c.fetchall()
+        for row in data:
+            print(row)
+
+    def print_all_applied_jobs(self):
+        c = self.db.cursor()
+        c.execute('SELECT * FROM user_applided_jobs')
+        # view all selected 
         data = c.fetchall()
         for row in data:
             print(row)
@@ -142,6 +180,18 @@ class database_access:
     def delete_user_friends(self):
         c = self.db.cursor()
         sql = 'DELETE FROM user_friends'
+        c.execute(sql)
+        self.db.commit()
+
+    def delete_user_applied(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM user_applied_jobs'
+        c.execute(sql)
+        self.db.commit()
+
+    def delete_user_interested(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM user_interested_jobs'
         c.execute(sql)
         self.db.commit()
 
