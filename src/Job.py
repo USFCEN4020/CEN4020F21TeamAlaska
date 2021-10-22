@@ -1,5 +1,6 @@
 from src.database_access import database_access
 
+
 class Job:
     def __init__(self, id: int, username: str, title: str, description: str, employer: str, location: str, salary: float):
         self.id = id
@@ -9,6 +10,9 @@ class Job:
         self.employer = employer
         self.location = location
         self.salary = salary
+
+    def __eq__(self, other):
+        return self.id == other.id and self.username == other.username and self.title == other.title and self.description == other.description and self.employer == other.employer and self.location == other.location and self.salary == other.salary
 
     @staticmethod
     def get_jobs(id: int, db: database_access):

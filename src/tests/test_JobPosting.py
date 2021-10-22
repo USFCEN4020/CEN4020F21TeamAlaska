@@ -1,6 +1,7 @@
 import src.database_access
 import src.Page
 import src.PostedJob
+import src.Job
 
 
 def resetFunctions():
@@ -81,8 +82,33 @@ class TestJobPosting():
         src.database_access.print = lambda s: output.append(s)
         self.db.print_jobs()
         print(output)
-        assert output == [('General Kenobi The Negotiator', 'Worm Farmer', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer0', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer1', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer2', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer3', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer4', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer5', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer6', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer7', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), ('General Kenobi The Negotiator', 'Worm Farmer8', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
+        assert output == [(1, 'General Kenobi The Negotiator', 'Worm Farmer', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (2, 'General Kenobi The Negotiator', 'Worm Farmer0', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (3, 'General Kenobi The Negotiator', 'Worm Farmer1', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (4, 'General Kenobi The Negotiator', 'Worm Farmer2', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (5, 'General Kenobi The Negotiator', 'Worm Farmer3', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0),
+                          (6, 'General Kenobi The Negotiator', 'Worm Farmer4', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (7, 'General Kenobi The Negotiator', 'Worm Farmer5', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (8, 'General Kenobi The Negotiator', 'Worm Farmer6', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (9, 'General Kenobi The Negotiator', 'Worm Farmer7', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (10, 'General Kenobi The Negotiator', 'Worm Farmer8', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
         resetFunctions()
+
+    def test_get_jobs(self):
+        expected = src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer',
+                               'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)
+        actual = src.Job.Job.get_jobs(1, self.db)
+
+        assert expected == actual
+
+    def test_print_job_full(self):
+        job = src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer',
+                          'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)
+        output = []
+        src.Job.print = lambda s: output.append(s)
+        job.print_job_full()
+
+        print("\n\nOUTPUT\n\n")
+        print(output[0])
+
+        expected = ['\n*Worm Farmer Job Posting*\n' +
+                    'Job Description: Farming worms\n' +
+                    'Location: Bikini Bottom\n' +
+                    'Expected Salary: 20000.0\n' +
+                    'Posted By: WormsRUs']
+        assert output == expected
 
     def testCleanUp(self):  # Teardown
         self.db.delete_jobs_table()
