@@ -379,14 +379,15 @@ class Page:
 
             # insert object member values into database
             db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)', [
-                        temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
+                temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
 
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
 
     def post_job_page(self):
         if self.user.authorized:
-            print('1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ')
+            print(
+                '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ')
             c = validateMenuInput(4)
             # posting a new job
             if c == 1:
@@ -406,7 +407,7 @@ class Page:
                 else:
                     print('\nMy Postings:')
                     for job in my_jobs:
-                        #job.print_full_job()
+                        # job.print_full_job()
                         print(f'{job.id} - {job.title}')
                     print('\n1 - Delete Job\n2 - Previous page\nEnter a choice: ')
                     c2 = validateMenuInput(2)
@@ -418,7 +419,7 @@ class Page:
                         self.back_option()
                     elif c2 == 2:
                         self.back_page()
-            # view all jobs        
+            # view all jobs
             elif c == 2:
                 self.page_stack.append(-1)
                 # VIEWING ALREADY EXISTING JOBS
@@ -439,7 +440,6 @@ class Page:
                     else:
                         print('Job does not exist')
                     self.back_option()
-            
 
     def skills_page(self):
         skill = input(
