@@ -111,7 +111,7 @@ class Page:
             self.pendingFriendRequests(db)
             c = -1
             print(
-                "1 - Search for a job\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Exit\nEnter a choice: ")
+                "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Exit\nEnter a choice: ")
             c = validateMenuInput(9)
             if c == 1:
                 self.page_stack.append(5)
@@ -387,16 +387,43 @@ class Page:
     def post_job_page(self):
         if self.user.authorized:
             print(
-                '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ')
-            c = validateMenuInput(4)
+                '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ')
+            c = validateMenuInput(6)
             # posting a new job
             if c == 1:
                 self.page_stack.append(-1)
                 self.postjob()
                 self.back_option()
             # going back
-            elif c == 4:
+            elif c == 6:
                 self.back_page()
+            # view all jobs
+            elif c == 2:
+                self.page_stack.append(-1)
+                # VIEWING ALREADY EXISTING JOBS
+                jobs = db.execute('SELECT job_id, title FROM jobs')
+                if not jobs:
+                    print('sorry, no jobs for you')
+                    self.back_option()
+                else:
+                    obj = {}
+                    print('Available Jobs:')
+                    for job in jobs:
+                        obj[job[0]] = job[1]
+                        print(f'{job[0]} - {job[1]}')
+                    c3 = int(input("Choose the job you'd like to view: "))
+                    job = Job.get_job_by_id(c3, db)
+                    if job:
+                        job.print_full_job()
+                        favIntOther = input("\n1 - Apply\n2 - Interested\nAny Other key - Go Back")
+                        if favIntOther == '1':
+                            Job.apply_job(self.user.username,job.id, db)
+                        elif favIntOther == '2':
+                            Job.add_interested(self.user.username, job.id, db)
+                    else:
+                        print('Job does not exist')
+                    self.back_option()
+
             # my job postings
             elif c == 3:
                 self.page_stack.append(-1)
@@ -425,27 +452,26 @@ class Page:
                         self.back_option()
                     elif c2 == 2:
                         self.back_page()
-            # view all jobs
-            elif c == 2:
+            elif c == 4:
                 self.page_stack.append(-1)
-                # VIEWING ALREADY EXISTING JOBS
-                jobs = db.execute('SELECT job_id, title FROM jobs')
-                if not jobs:
-                    print('sorry, no jobs for you')
-                    self.back_option()
-                else:
-                    obj = {}
-                    print('Available Jobs:')
+                jobs = Job.get_applied_jobs(self.user.username, db)
+                if jobs != False:
                     for job in jobs:
-                        obj[job[0]] = job[1]
-                        print(f'{job[0]} - {job[1]}')
-                    c3 = int(input("Choose the job you'd like to view: "))
-                    job = Job.get_job_by_id(c3, db)
-                    if job:
+                        print('\n')
                         job.print_full_job()
-                    else:
-                        print('Job does not exist')
-                    self.back_option()
+                        print('\n')
+                self.back_page()
+
+            elif c == 5:
+                self.page_stack.append(-1)
+                jobs = Job.get_interested_jobs(self.user.username, db)
+                if jobs != False:
+                    for job in jobs:
+                        job.print_full_job()
+                else:
+                    print("You are not interested in any jobs currently.\n")
+                self.back_page()
+
 
     def skills_page(self):
         skill = input(
