@@ -18,7 +18,7 @@ class database_access:
         )
         '''
         sql_create_jobs_table = ''' CREATE TABLE IF NOT EXISTS jobs (
-            job_id integer PRIMARY KEY,
+            job_id integer PRIMARY KEY AUTOINCREMENT,
             username text NOT NULL,
             title text NOT NULL,
             description text NOT NULL,
@@ -68,7 +68,7 @@ class database_access:
             CREATE TABLE IF NOT EXISTS user_interested_job (
             username text NOT NULL,
             job_id integer NOT NULL,
-            PRIMARY KEY(username1, username2),
+            PRIMARY KEY (username),
             FOREIGN KEY (username) REFERENCES users (username),
             FOREIGN KEY (job_id) REFERENCES jobs (job_id)
             )
@@ -79,7 +79,7 @@ class database_access:
             username text NOT NULL,
             job_id integer NOT NULL,
             status text NOT NULL,
-            PRIMARY KEY(username1, username2),
+            PRIMARY KEY (username),
             FOREIGN KEY (username) REFERENCES users (username),
             FOREIGN KEY (job_id) REFERENCES jobs (job_id)
             )

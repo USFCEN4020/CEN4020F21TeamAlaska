@@ -54,7 +54,11 @@ class Job:
         delete_query_string = '''
             DELETE FROM jobs WHERE job_id = ?
         '''
+        check_string = 'SELECT COUNT(*) FROM jobs WHERE job_id = ?;'
         db.execute(delete_query_string, [id])
+        # checking if the delete was successful
+        res = db.execute(check_string, [id])
+        return True if res[0][0] == 0 else False
 
     def apply_job(self, username, job_id, db: database_access):
         apply_job_sql = '''

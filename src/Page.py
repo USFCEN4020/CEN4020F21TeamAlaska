@@ -408,14 +408,20 @@ class Page:
                     print('\nMy Postings:')
                     for job in my_jobs:
                         # job.print_full_job()
-                        print(f'{job.id} - {job.title}')
+                        print(f'Job ID: {job.id}, Title: {job.title}')
                     print('\n1 - Delete Job\n2 - Previous page\nEnter a choice: ')
                     c2 = validateMenuInput(2)
+                    # DELETING MY JOB
                     if c2 == 1:
-                        print("Enter the number for the job you'd like to delete: ")
-                        c_job_to_delete = validateMenuInput(len(my_jobs))
+                        max = db.execute('SELECT MAX(job_id) FROM jobs', [])[0][0]
+                        # max = max[0][0] if max else 0
+                        print("Enter the Job ID to Delete: ")
+                        c_job_to_delete = validateMenuInput(max)
                         result = Job.delete_job(int(c_job_to_delete), db)
-                        print('Job successfully deleted')
+                        if(result):
+                            print('Job successfully deleted')
+                        else:
+                            print('Invalid Job ID')
                         self.back_option()
                     elif c2 == 2:
                         self.back_page()
