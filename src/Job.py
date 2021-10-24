@@ -40,7 +40,7 @@ class Job:
         jobs = db.execute(jobQueryString, [user])
         for job in jobs:
             my_jobs.append(Job(job[0], job[1], job[2],
-                           job[3], job[4], job[5], job[6]))
+                               job[3], job[4], job[5], job[6]))
         return my_jobs
 
     def print_full_job(self):
@@ -65,7 +65,6 @@ class Job:
 
     @staticmethod
     def apply_job(username, job_id, db: database_access):
-        print(username,job_id)
         apply_job_sql = '''
         INSERT INTO user_applied_jobs VALUES (?,?,?)
         '''

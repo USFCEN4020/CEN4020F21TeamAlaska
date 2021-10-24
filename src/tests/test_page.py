@@ -4,6 +4,7 @@ from src.User import *
 from Profile.Profile import *
 from src.Page import *
 import src.helpers
+import src.Job
 
 
 # Does initial setup before any test runs
@@ -15,6 +16,8 @@ def setup_module():
     db.delete_users_table()
     db.delete_user_friends()
     db.delete_job_experience_table()
+    db.delete_user_interested()
+    db.delete_user_applied()
 
 
 def resetFunctions():
@@ -415,7 +418,7 @@ class TestJobPages:
         self.page.post_job_page()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             "sorry, no jobs for you"
         ]
 
@@ -440,7 +443,7 @@ class TestJobPages:
         self.page.postjob()
 
         # -- end setup --
-        input_Page = ['1', '1']
+        input_Page = ['1', '-1', '-1']
         input_helpers = ['2']
 
         src.Page.print = lambda s: output.append(s)
@@ -450,7 +453,7 @@ class TestJobPages:
         resetFunctions()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             "Available Jobs:",
             "1 - Worm Farmer",
             "2 - Worm Farmer 2"
@@ -467,7 +470,7 @@ class TestJobPages:
         resetFunctions()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             "Available Jobs:",
             "1 - Worm Farmer",
             "2 - Worm Farmer 2",
@@ -495,11 +498,78 @@ class TestJobPages:
         self.page.post_job_page()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             '\nMy Postings:',
             'Job ID: 1, Title: Worm Farmer',
             'Job ID: 2, Title: Worm Farmer 2',
             '\n1 - Delete Job\n2 - Previous page\nEnter a choice: ',
+        ]
+
+    def test_view_applications(self):
+        # -- Setup --
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        src.Job.Job.apply_job("darvelo", 1, db)
+
+        # -- end setup --
+        input_helpers = ['4']
+        output = []
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        resetFunctions()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
+            '\n',
+            '\n',
+        ]
+
+    def test_view_interested_none(self):
+        # -- Setup --
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        # -- end setup --
+        input_helpers = ['5']
+        output = []
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        resetFunctions()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
+            "You are not interested in any jobs currently.\n"
+        ]
+
+    def test_view_interested(self):
+        # -- Setup --
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        src.Job.Job.add_interested("darvelo", 2, db)
+
+        # -- end setup --
+        input_helpers = ['5']
+        output = []
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        resetFunctions()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
         ]
 
     def test_job_page_delete_posting(self):
@@ -524,7 +594,7 @@ class TestJobPages:
         resetFunctions()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             '\nMy Postings:',
             'Job ID: 1, Title: Worm Farmer',
             'Job ID: 2, Title: Worm Farmer 2',
@@ -557,7 +627,7 @@ class TestJobPages:
 
         resetFunctions()
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             "You don't have any postings at the moment",
         ]
 
@@ -573,4 +643,6 @@ def teardown_module():
     db.delete_user_friends()
     db.delete_job_experience_table()
     db.delete_jobs_table()
+    db.delete_user_applied()
+    db.delete_user_interested()
     db.close()
