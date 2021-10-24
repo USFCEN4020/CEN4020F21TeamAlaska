@@ -19,6 +19,9 @@ class Page:
         self.page_stack = [0]
         # Numbered pages so they're easily added to the stack and then called
         self.index = {
+            -1: {
+                "view": self.getOutOfTest
+            },
             0: {
                 "view": self.home_page
             },
@@ -413,7 +416,8 @@ class Page:
                     c2 = validateMenuInput(2)
                     # DELETING MY JOB
                     if c2 == 1:
-                        max = db.execute('SELECT MAX(job_id) FROM jobs', [])[0][0]
+                        max = db.execute(
+                            'SELECT MAX(job_id) FROM jobs', [])[0][0]
                         # max = max[0][0] if max else 0
                         print("Enter the Job ID to Delete: ")
                         c_job_to_delete = validateMenuInput(max)
@@ -966,3 +970,6 @@ class Page:
         except Exception as error:
             print('Friend Request Already Exists.')
             return False
+
+    def getOutOfTest(self):
+        pass

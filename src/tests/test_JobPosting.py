@@ -124,6 +124,15 @@ class TestJobPosting():
                     'Posted By: WormsRUs']
         assert output == expected
 
+    def test_delete_job(self):
+        expected = [src.Job.Job(2, 'General Kenobi The Negotiator', 'Worm Farmer0', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(3, 'General Kenobi The Negotiator', 'Worm Farmer1', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(4, 'General Kenobi The Negotiator', 'Worm Farmer2', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(5, 'General Kenobi The Negotiator', 'Worm Farmer3', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0),
+                    src.Job.Job(6, 'General Kenobi The Negotiator', 'Worm Farmer4', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(7, 'General Kenobi The Negotiator', 'Worm Farmer5', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(8, 'General Kenobi The Negotiator', 'Worm Farmer6', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(9, 'General Kenobi The Negotiator', 'Worm Farmer7', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(10, 'General Kenobi The Negotiator', 'Worm Farmer8', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
+        assert src.Job.Job.delete_job(1, self.db) == True
+
+        actual = src.Job.Job.get_my_postings(
+            'General Kenobi The Negotiator', self.db)
+        assert actual == expected
+
     def testCleanUp(self):  # Teardown
         self.db.delete_jobs_table()
         # self.db.close()
