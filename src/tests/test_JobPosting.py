@@ -86,12 +86,29 @@ class TestJobPosting():
                           (6, 'General Kenobi The Negotiator', 'Worm Farmer4', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (7, 'General Kenobi The Negotiator', 'Worm Farmer5', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (8, 'General Kenobi The Negotiator', 'Worm Farmer6', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (9, 'General Kenobi The Negotiator', 'Worm Farmer7', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), (10, 'General Kenobi The Negotiator', 'Worm Farmer8', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
         resetFunctions()
 
-    def test_get_jobs(self):
+    def test_get_job_by_id(self):
         expected = src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer',
                                'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)
         actual = src.Job.Job.get_job_by_id(1, self.db)
 
         assert expected == actual
+
+        # Test job does not exist
+        expected = False
+        actual = actual = src.Job.Job.get_job_by_id(-1, self.db)
+        assert expected == actual
+
+    def test_get_my_postings(self):
+        # Test user with jobs
+        expected = [src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(2, 'General Kenobi The Negotiator', 'Worm Farmer0', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(3, 'General Kenobi The Negotiator', 'Worm Farmer1', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(4, 'General Kenobi The Negotiator', 'Worm Farmer2', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(5, 'General Kenobi The Negotiator', 'Worm Farmer3', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0),
+                    src.Job.Job(6, 'General Kenobi The Negotiator', 'Worm Farmer4', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(7, 'General Kenobi The Negotiator', 'Worm Farmer5', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(8, 'General Kenobi The Negotiator', 'Worm Farmer6', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(9, 'General Kenobi The Negotiator', 'Worm Farmer7', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0), src.Job.Job(10, 'General Kenobi The Negotiator', 'Worm Farmer8', 'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)]
+        actual = src.Job.Job.get_my_postings(
+            "General Kenobi The Negotiator", self.db)
+        assert expected == actual
+
+        # Test user does not exist
+        actual = src.Job.Job.get_my_postings("NonExistentUser", self.db)
+        assert actual == []
 
     def test_print_full_job(self):
         job = src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer',
