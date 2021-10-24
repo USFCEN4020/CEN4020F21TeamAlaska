@@ -16,6 +16,11 @@ class TestJobPosting():
     db = src.database_access.database_access(db_name)
     src.Page.db = db
 
+    def clearTables(self):
+        self.db.delete_jobs_table()
+        self.db.delete_user_applied()
+        self.db.delete_user_interested()
+
     def testPostValidJob(self):
         input_values = ['Worm Farmer', 'Farming worms',
                         'WormsRUs', 'Bikini Bottom', '20000']
@@ -133,7 +138,26 @@ class TestJobPosting():
             'General Kenobi The Negotiator', self.db)
         assert actual == expected
 
+    def test_apply_job(self):
+        # Test no applied jobs
+        assert src.Job.Job.get_applied_jobs("darvelo", self.db) == False
+
+        # Test applied job has new item
+        src.Job.Job.apply_job("darvelo", 2, self.db)
+        assert src.Job.Job.get_applied_jobs("darvelo", self.db) == [
+            src.Job.Job.get_job_by_id(2, self.db)]
+
+    def test_add_interested(self):
+        # Test no interested jobs
+        assert src.Job.Job.get_interested_jobs("darvelo", self.db) == False
+        # Test interested job has new item
+        src.Job.Job.add_interested("darvelo", 3, self.db)
+        assert src.Job.Job.get_interested_jobs(
+            "darvelo", self.db) == [src.Job.Job.get_job_by_id(3, self.db)]
+
     def testCleanUp(self):  # Teardown
         self.db.delete_jobs_table()
+        self.db.delete_user_applied()
+        self.db.delete_user_interested()
         # self.db.close()
         assert True == True
