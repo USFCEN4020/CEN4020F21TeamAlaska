@@ -15,7 +15,6 @@ def setup_module():
     db.delete_users_table()
     db.delete_user_friends()
     db.delete_job_experience_table()
-    db.delete_jobs_table()
 
 
 def resetFunctions():

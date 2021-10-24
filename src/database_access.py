@@ -173,7 +173,7 @@ class database_access:
 
     def delete_jobs_table(self):
         c = self.db.cursor()
-        sql = 'DELETE FROM jobs'
+        sql = 'DROP TABLE jobs'
         c.execute(sql)
         self.db.commit()
 
