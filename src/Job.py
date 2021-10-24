@@ -12,6 +12,9 @@ class Job:
         self.location = location
         self.salary = salary
 
+    def __eq__(self, other):
+        return self.id == other.id and self.username == other.username and self.title == other.title and self.description == other.description and self.employer == other.employer and self.location == other.location and self.salary == other.salary
+
     @staticmethod
     def get_job_by_id(id: int, db: database_access):
         jobQueryString = '''
