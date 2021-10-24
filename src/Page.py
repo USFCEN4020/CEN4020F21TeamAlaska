@@ -379,23 +379,53 @@ class Page:
 
             # insert object member values into database
             db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)', [
-                        temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
+                temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
 
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
 
     def post_job_page(self):
         if self.user.authorized:
-            print('1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ')
-            c = validateMenuInput(3)
+            print(
+                '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ')
+            c = validateMenuInput(4)
+            # posting a new job
             if c == 1:
                 self.page_stack.append(-1)
                 self.postjob()
                 self.back_option()
-            
-            elif c == 3:
+            # going back
+            elif c == 4:
                 self.back_page()
-            
+            # my job postings
+            elif c == 3:
+                self.page_stack.append(-1)
+                my_jobs = Job.get_my_postings(self.user.username, db)
+                if not my_jobs:
+                    print("You don't have any postings at the moment")
+                    self.back_option()
+                else:
+                    print('\nMy Postings:')
+                    for job in my_jobs:
+                        # job.print_full_job()
+                        print(f'Job ID: {job.id}, Title: {job.title}')
+                    print('\n1 - Delete Job\n2 - Previous page\nEnter a choice: ')
+                    c2 = validateMenuInput(2)
+                    # DELETING MY JOB
+                    if c2 == 1:
+                        max = db.execute('SELECT MAX(job_id) FROM jobs', [])[0][0]
+                        # max = max[0][0] if max else 0
+                        print("Enter the Job ID to Delete: ")
+                        c_job_to_delete = validateMenuInput(max)
+                        result = Job.delete_job(int(c_job_to_delete), db)
+                        if(result):
+                            print('Job successfully deleted')
+                        else:
+                            print('Invalid Job ID')
+                        self.back_option()
+                    elif c2 == 2:
+                        self.back_page()
+            # view all jobs
             elif c == 2:
                 self.page_stack.append(-1)
                 # VIEWING ALREADY EXISTING JOBS
@@ -409,11 +439,13 @@ class Page:
                     for job in jobs:
                         obj[job[0]] = job[1]
                         print(f'{job[0]} - {job[1]}')
-                    c2 = int(input("Choose the job you'd like to view: "))
-                    job = Job.get_jobs(c2, db)
-                    job.print_job_full()
+                    c3 = int(input("Choose the job you'd like to view: "))
+                    job = Job.get_job_by_id(c3, db)
+                    if job:
+                        job.print_full_job()
+                    else:
+                        print('Job does not exist')
                     self.back_option()
-            
 
     def skills_page(self):
         skill = input(
