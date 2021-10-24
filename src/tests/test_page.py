@@ -416,7 +416,7 @@ class TestJobPages:
         self.page.post_job_page()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
             "sorry, no jobs for you"
         ]
 
@@ -451,7 +451,7 @@ class TestJobPages:
         resetFunctions()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
             "Available Jobs:",
             "1 - Worm Farmer",
             "2 - Worm Farmer 2"

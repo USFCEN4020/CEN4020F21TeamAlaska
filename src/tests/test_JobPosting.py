@@ -89,16 +89,16 @@ class TestJobPosting():
     def test_get_jobs(self):
         expected = src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer',
                                'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)
-        actual = src.Job.Job.get_jobs(1, self.db)
+        actual = src.Job.Job.get_job_by_id(1, self.db)
 
         assert expected == actual
 
-    def test_print_job_full(self):
+    def test_print_full_job(self):
         job = src.Job.Job(1, 'General Kenobi The Negotiator', 'Worm Farmer',
                           'Farming worms', 'WormsRUs', 'Bikini Bottom', 20000.0)
         output = []
         src.Job.print = lambda s: output.append(s)
-        job.print_job_full()
+        job.print_full_job()
 
         expected = ['\n*Worm Farmer Job Posting*\n' +
                     'Job Description: Farming worms\n' +
