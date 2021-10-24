@@ -15,7 +15,6 @@ def setup_module():
     db.delete_users_table()
     db.delete_user_friends()
     db.delete_job_experience_table()
-    db.delete_jobs_table()
 
 
 def resetFunctions():
@@ -416,7 +415,7 @@ class TestJobPages:
         self.page.post_job_page()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
             "sorry, no jobs for you"
         ]
 
@@ -451,10 +450,115 @@ class TestJobPages:
         resetFunctions()
 
         assert output == [
-            '1 - Post a New Job\n2 - View Jobs\n3 - Previous page\nEnter a choice: ',
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
             "Available Jobs:",
             "1 - Worm Farmer",
             "2 - Worm Farmer 2"
+        ]
+
+        # -- TEST Job does not exist --
+        input_Page = ['-1', '1']
+        input_helpers = ['2']
+        output = []
+        src.Page.input = mock_input_Page
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+        resetFunctions()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            "Available Jobs:",
+            "1 - Worm Farmer",
+            "2 - Worm Farmer 2",
+            "Job does not exist"
+        ]
+
+    def test_job_page_view_my_postings(self):
+        # -- Setup --
+
+        def mock_input_Page(s):
+            return input_Page.pop(0)
+        src.Page.input = mock_input_Page
+
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        # -- end setup --
+        input_Page = ['0']
+        input_helpers = ['3', '2']
+        output = []
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '\nMy Postings:',
+            'Job ID: 1, Title: Worm Farmer',
+            'Job ID: 2, Title: Worm Farmer 2',
+            '\n1 - Delete Job\n2 - Previous page\nEnter a choice: ',
+        ]
+
+    def test_job_page_delete_posting(self):
+        # -- Setup --
+        def mock_input_Page(s):
+            return input_Page.pop(0)
+        src.Page.input = mock_input_Page
+
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        # -- end setup --
+        input_Page = ['0']
+        input_helpers = ['3', '1', '1']
+        output = []
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        resetFunctions()
+
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            '\nMy Postings:',
+            'Job ID: 1, Title: Worm Farmer',
+            'Job ID: 2, Title: Worm Farmer 2',
+            '\n1 - Delete Job\n2 - Previous page\nEnter a choice: ',
+            'Enter the Job ID to Delete: ',
+            'Job successfully deleted'
+        ]
+
+    def test_job_page_view_my_postings_Zero(self):
+        # -- Setup --
+        self.page.user = User("NonExistentUser", "", "",
+                              "", "", "", "", "", True, db)
+
+        def mock_input_Page(s):
+            return input_Page.pop(0)
+        src.Page.input = mock_input_Page
+
+        def mock_input_helpers(s):
+            return input_helpers.pop(0)
+        src.helpers.input = mock_input_helpers
+
+        # -- end setup --
+        input_Page = ['0']
+        input_helpers = ['3']
+        output = []
+
+        src.Page.print = lambda s: output.append(s)
+
+        self.page.post_job_page()
+
+        resetFunctions()
+        assert output == [
+            '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - Previous page\nEnter a choice: ',
+            "You don't have any postings at the moment",
         ]
 
     def cleanUp(self):
