@@ -65,7 +65,7 @@ class database_access:
         '''
 
         sql_create_user_interested_job = '''
-            CREATE TABLE IF NOT EXISTS user_interested_job (
+            CREATE TABLE IF NOT EXISTS user_interested_jobs (
             username text NOT NULL,
             job_id integer NOT NULL,
             PRIMARY KEY (username),

@@ -63,14 +63,41 @@ class Job:
         res = db.execute(check_string, [id])
         return True if res[0][0] == 0 else False
 
-    def apply_job(self, username, job_id, db: database_access):
+    @staticmethod
+    def apply_job(username, job_id, db: database_access):
+        print(username,job_id)
         apply_job_sql = '''
-        INSERT INTO user_applied_jobs VALUES (?,?)
+        INSERT INTO user_applied_jobs VALUES (?,?,?)
         '''
-        db.execute(apply_job_sql, [username, job_id])
+        db.execute(apply_job_sql, [username, job_id, 'Applied'])
 
-    def add_interested(self, username, job_id, db: database_access):
+    @staticmethod
+    def add_interested(username, job_id, db: database_access):
         interested_job_sql = '''
         INSERT INTO user_interested_jobs VALUES (?,?)
         '''
         db.execute(interested_job_sql, [username, job_id])
+
+    @staticmethod
+    def get_applied_jobs(username, db):
+        applied_jobs_sql = '''
+        SELECT job_id from user_applied_jobs WHERE username = ?'''
+        res = db.execute(applied_jobs_sql, [username])
+        if res:
+            out = []
+            for element in res:
+                out.append(Job.get_job_by_id(element[0], db))
+            return out
+        return False
+
+    @staticmethod
+    def get_interested_jobs(username, db):
+        applied_jobs_sql = '''
+        SELECT job_id from user_interested_jobs WHERE username = ?'''
+        res = db.execute(applied_jobs_sql, [username])
+        if res:
+            out = []
+            for element in res:
+                out.append(Job.get_job_by_id(element[0], db))
+            return out
+        return False
