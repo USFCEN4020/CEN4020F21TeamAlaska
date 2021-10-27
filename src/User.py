@@ -8,6 +8,7 @@ class User:
         password: str,
         firstname: str,
         lastname: str,
+        tier: str,
         language: str,
         email_notification: bool,
         sms_notification: bool,
@@ -19,6 +20,7 @@ class User:
         self.password = password
         self.firstname = firstname
         self.lastname = lastname
+        self.tier = tier
         self.language = language
         self.email_notification = email_notification
         self.sms_notification = sms_notification
@@ -67,7 +69,7 @@ def get_user_by_login(username: str, password: str, db: Database) -> User:
     res = db.execute(find_user, (username, password))
     if res:
         res = res[0]
-        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], True, db)
+        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], True, db)
     else:
         return None
 
@@ -77,7 +79,7 @@ def get_user_by_username(username: str, db: Database) -> User:
     res = db.execute(find_user, [username])
     if res:
         res = res[0]
-        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], True, db)
+        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], True, db)
     else:
         return None
 
@@ -86,7 +88,7 @@ def get_user_by_username(username: str, db: Database) -> User:
 # credentials: [username, password, firstname, lastname]
 def create_user(credentials: tuple, db: Database) -> User:
     default_language = "english"
-    db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                credentials + (default_language, True, True, True))
     return User(credentials[0], credentials[1], credentials[2],
-                credentials[3], default_language, True, True, True, True, db)
+                credentials[3], credentials[4], default_language, True, True, True, True, db)
