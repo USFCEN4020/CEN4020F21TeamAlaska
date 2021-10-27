@@ -11,6 +11,7 @@ class database_access:
             password text NOT NULL,
             firstname TEXT NOT NULL,
             lastname TEXT NOT NULL,
+            tier TEXT NOT NULL,
             language text NOT NULL,
             email_notification BOOLEAN NOT NULL,
             sms_notification BOOLEAN NOT NULL,

@@ -13,7 +13,7 @@ class Page:
     # each page will "render" the appropriate "form" or prompt
     def __init__(self):
         # current login info
-        self.user = User("", "", "", "", "english",
+        self.user = User("", "", "", "", "", "english",
                          True, True, True, False, db)
         # stack is to implement the navigation functionality
         self.page_stack = [0]
@@ -572,7 +572,13 @@ class Page:
         if register:
             firstname = input("Enter first name: ")
             lastname = input("Enter last name: ")
-            return (user, password, firstname, lastname)
+            print("1- Standard Tier\n2- Plus Tier\nEnter a choice: ")
+            tier = validateMenuInput(2)
+            tier = "plus" if tier == 2 else "standard"
+            if tier == "plus":
+                fo = input('Total = $10\nEnter Credit Card Information (anything):')
+                print("Thanks for your subscription!")
+            return (user, password, firstname, lastname, tier)
         return (user, password)
 
     def login(self):
