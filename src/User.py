@@ -92,3 +92,10 @@ def create_user(credentials: tuple, db: Database) -> User:
                credentials + (default_language, True, True, True))
     return User(credentials[0], credentials[1], credentials[2],
                 credentials[3], credentials[4], default_language, True, True, True, True, db)
+
+def get_all_usernames(username: str, db: Database):
+        sql_for_all_users = '''
+        SELECT username FROM users WHERE username != ?
+        '''
+        res = db.execute(sql_for_all_users, [username])
+        return res

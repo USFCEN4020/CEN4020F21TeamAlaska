@@ -5,6 +5,7 @@ from src.JobExperience import *
 from src.User import *
 from src.PostedJob import PostedJob
 from Profile.Profile import *
+from src.message import *
 from src.helpers import validateMenuInput
 db = Database("InCollege.sqlite3")
 
@@ -78,6 +79,9 @@ class Page:
             },
             18: {
                 "view": self.friend_profile_page
+            },
+            19: {
+                "view": self.messages_page
             }
         }
 
@@ -114,8 +118,8 @@ class Page:
             self.pendingFriendRequests(db)
             c = -1
             print(
-                "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Exit\nEnter a choice: ")
-            c = validateMenuInput(9)
+                "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n0 - Exit\nEnter a choice: ")
+            c = validateMenuInput(10)
             if c == 1:
                 self.page_stack.append(5)
                 self.post_job_page()
@@ -141,8 +145,12 @@ class Page:
                 self.page_stack.append(17)
                 self.myNetwork_page()
             if c == 9:
+                self.page_stack.append(19)
+                self.messages_page()
+            if c == 0:
                 print("Thank you for using InCollege!")
                 return 0
+            
 
     def useful_links_page(self):
         # select from links
@@ -551,6 +559,38 @@ class Page:
         # previous page
         elif option == '4':
             self.back_page()
+
+    ### MESSAGES
+    def messages_page(self):
+        # cur_user = self.user.username
+        print("1 - Inbox\n2 - Send a message\n0 - Back to previous\nEnter a choice: ")
+        c = validateMenuInput(2)
+        if c == 0:
+            self.back_page()
+        if c == 1:
+            self.page_stack.append(-1)
+            # viewing the messages
+            messages = Message.get_my_messages(self.user.username, db)
+            for message in messages:
+                print(f'{message[1]}: {message[3]}')
+            self.back_option()
+        if c == 2:
+            self.page_stack.append(-1)
+            people_to_message = []
+            if self.user.tier == "standard":
+                # get friends
+                people_to_message = self.get_friends()
+            if self.user.tier == "plus":
+                # get all users except self
+                people_to_message = get_all_usernames(self.user.username, db)
+            for idx, person in enumerate(people_to_message):
+                print(f'{idx} - {person[0]}')
+            c_person = validateMenuInput(len(people_to_message))
+            recipient = people_to_message[c_person][0]
+            msg = input(f'Your message to {recipient}: ')
+            Message.send_message(self.user.username, recipient, msg, db)
+            self.back_option()
+    ###
 
     # goes up a level to the previous page
     def back_page(self, args=[]):

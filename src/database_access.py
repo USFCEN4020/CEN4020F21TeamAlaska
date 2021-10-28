@@ -85,15 +85,27 @@ class database_access:
             FOREIGN KEY (job_id) REFERENCES jobs (job_id)
             )
         '''
+        sql_create_messages_table = '''
+            CREATE TABLE IF NOT EXISTS messages (
+                message_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sender TEXT NOT NULL,
+                receiver TEXT NOT NULL,
+                body TEXT NOT NULL,
+                status TEXT DEFAULT 'sent' NOT NULL,
+                time_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                FOREIGN KEY (sender) REFERENCES users (username),
+                FOREIGN KEY (receiver) REFERENCES users (username)
+            )
+        '''
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
-        # self.db.commit()
         c.execute(sql_create_profile_table)
         c.execute(sql_create_user_job_experience_table)
         c.execute(sql_create_user_friend_relation)
         c.execute(sql_create_user_interested_job)
         c.execute(sql_create_user_applied_job)
+        c.execute(sql_create_messages_table)
         self.db.commit()
 
     # To select and print all tables
