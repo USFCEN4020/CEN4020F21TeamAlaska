@@ -571,8 +571,15 @@ class Page:
             self.page_stack.append(-1)
             # viewing the messages
             messages = Message.get_my_messages(self.user.username, db)
-            for message in messages:
-                print(f'{message[1]}: {message[3]}')
+            i = 1
+            while len(messages) != 0:
+                for message in messages:
+                    print(i+f'{message[1]}: {message[3][0:10]}')
+                choice = input("Choose a message to read. Or choose 0 to leave inbox")
+                if choice == 0:
+                    break
+                else:
+                    self.view_message(messages,choice,self)
             self.back_option()
         if c == 2:
             self.page_stack.append(-1)
@@ -591,6 +598,34 @@ class Page:
             Message.send_message(self.user.username, recipient, msg, db)
             self.back_option()
     ###
+    # message viewer
+    def view_message(messages, selection, self):
+        print(f'{messages[selection][1]}: {messages[selection][3]}')
+
+        choice = input("\n\n1 - Reply\n2 - Delete\n3 - Return to Inbox")
+        if choice == 1:
+            people_to_message = []
+            if self.user.tier == "standard":
+                # get friends
+                people_to_message = self.get_friends()
+            if self.user.tier == "plus":
+                # get all users except self
+                people_to_message = get_all_usernames(self.user.username, db)
+            for idx, person in enumerate(people_to_message):
+                print(f'{idx} - {person[0]}')
+            c_person = validateMenuInput(len(people_to_message))
+            recipient = people_to_message[c_person][0]
+            msg = input(f'Your message to {recipient}: ')
+            Message.send_message(self.user.username, recipient, msg, db)
+            
+            print("Message sent. Returning to Inbox...\n")
+        if choice == 2:
+            Message.delete_message(messages[selection][0])
+            messages.remove(selection)
+            
+            print("Message removed. Returning to Inbox...\n")
+        if choice == 3:
+            print("Returning to Inbox...\n")
 
     # goes up a level to the previous page
     def back_page(self, args=[]):

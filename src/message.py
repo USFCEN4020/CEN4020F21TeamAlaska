@@ -16,3 +16,14 @@ class Message:
         '''
         res = db.execute(sql_get_messages, [receiver])
         return res
+
+    @staticmethod
+    def delete_message(message_id: int, db: database_access):
+        sql_delete_message = '''
+            DELETE FROM messages WHERE message_id = ?
+        '''
+        db.execute(sql_delete_message, [message_id])
+        check = 'SELECT COUNT(*) FROM messages WHERE message_id = ?'
+        # checking if the delete was successful
+        res = db.execute(check, [message_id])
+        return True if res[0][0] == 0 else False
