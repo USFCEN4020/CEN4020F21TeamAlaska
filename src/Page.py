@@ -116,6 +116,8 @@ class Page:
         else:
             # Preliminary pending friend request check, not a page.
             self.pendingFriendRequests(db)
+            # Show if new messages are in inbox, "new message" is defined as messages not read yet
+            self.notifyMessage(db)
             c = -1
             print(
                 "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n0 - Exit\nEnter a choice: ")
@@ -574,7 +576,7 @@ class Page:
             i = 1
             while len(messages) != 0:
                 for message in messages:
-                    print(i+f'{message[1]}: {message[3][0:10]}')
+                    print(i+f'Status:{message[4].capitalize()} {message[1]}: {message[3][0:10]}')
                 choice = input("Choose a message to read. Or choose 0 to leave inbox")
                 if choice == 0:
                     break
@@ -600,8 +602,16 @@ class Page:
     ###
     # message viewer
     def view_message(messages, selection, self):
+        # update message from sent to read
+        sql_update = '''
+            UPDATE messages SET status = 'read' WHERE message_id = ?
+        '''
+        db.execute(sql_update,messages[selection][0])
+        
+        #print message
         print(f'{messages[selection][1]}: {messages[selection][3]}')
 
+        #options to reply, delete, or go back to inbox
         choice = input("\n\n1 - Reply\n2 - Delete\n3 - Return to Inbox")
         if choice == 1:
             people_to_message = []
@@ -626,6 +636,15 @@ class Page:
             print("Message removed. Returning to Inbox...\n")
         if choice == 3:
             print("Returning to Inbox...\n")
+    # pulls from database to see which messages are available
+    def notifyMessage(self,db):
+        sql_count_messasges = '''
+            SELECT COUNT(*) FROM messages WHERE receiver = ? AND status = 'sent'
+        '''
+        numMessage = db.execute(sql_count_messasges,[self.user.username])
+        if(numMessage >= 1):
+            print("You have " + numMessage + " new messages! Go to the messages tab to view.")
+            
 
     # goes up a level to the previous page
     def back_page(self, args=[]):
