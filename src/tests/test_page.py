@@ -23,6 +23,7 @@ def setup_module():
 def resetFunctions():
     src.Page.input = input
     src.Page.print = print
+    src.helpers.input = input
 
 
 class TestIsPasswordSecure:
@@ -67,7 +68,7 @@ class TestIsPasswordSecure:
 
 class TestGetCredentials:
     page = src.Page.Page()
-
+    
     def testLoginIO(self):
         input_values = ['randion', 'Password#1']
         output = []
@@ -75,7 +76,6 @@ class TestGetCredentials:
         def mock_input(s):
             output.append(s)
             return input_values.pop(0)
-        src.helpers.validateMenuInput.input = mock_input
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.get_credentials(False)
@@ -84,7 +84,7 @@ class TestGetCredentials:
             'Enter username: ',
             'Enter password: ',
         ]
-
+    
     def testRegisterIO(self):
         input_values = ['randion', 'Password#1', 'Robby', 'YbboR', '1']
         output = []
@@ -92,7 +92,7 @@ class TestGetCredentials:
         def mock_input(s):
             output.append(s)
             return input_values.pop(0)
-        src.helpers.validateMenuInput.input = mock_input
+        src.helpers.input = mock_input
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.get_credentials(True)
@@ -102,10 +102,11 @@ class TestGetCredentials:
             'Enter password: ',
             'Enter first name: ',
             'Enter last name: ',
-            "1- Standard Tier\n2- Plus Tier\nEnter a choice: "
+            '1- Standard Tier\n2- Plus Tier\nEnter a choice: ',
+            ''
         ]
 
-
+    
 class TestRegisterLogin:
     page = src.Page.Page()
     db_name = "testing.sqlite3"
@@ -113,16 +114,18 @@ class TestRegisterLogin:
     src.Page.db = db
 
     def testUserRegistration(self):
-        input_values = ['randion', 'Password#1', 'Robby', 'Ybbor']
+        input_values = ['randion', 'Password#1', 'Robby', 'Ybbor', '1']
         output = []
 
         def mock_input(s):
             return input_values.pop(0)
         src.Page.input = mock_input
+        src.helpers.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.register()
         resetFunctions()
-        assert output == ["An account for randion was registered successfully"]
+        print(output)
+        assert output == ['1- Standard Tier\n2- Plus Tier\nEnter a choice: ', 'An account for randion was registered successfully']
 
     def testUserLoginCorrect(self):
         input_values = ['randion', 'Password#1']
@@ -162,17 +165,19 @@ class TestRegisterLogin:
         def mock_input(s):
             return input_values.pop(0)
         src.Page.input = mock_input
+        src.helpers.input = mock_input
         for i in range(0, 11):
             input_values = [
-                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i)]
+                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), '1']
             self.page.register()
         resetFunctions()
         output = []
-        input = ['TomSawyer', 'Passworrd#234', 'Tommy', "Sawyer"]
+        input = ['TomSawyer', 'Passworrd#234', 'Tommy', "Sawyer", '2']
 
         def mock_input(s):
             output.append(s)
         src.Page.input = mock_input
+        src.helpers.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.register()
         resetFunctions()
@@ -186,10 +191,10 @@ class TestRegisterLogin:
         self.db.print_users()
         src.database_access.print = print
         expected = [("randion", "Password#1", "Robby",
-                     "Ybbor", "english", 1, 1, 1)]
+                     "Ybbor", "standard", "english", 1, 1, 1)]
         for i in range(0, 9):
             expected.append((
-                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), "english", 1, 1, 1))
+                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), "standard", "english", 1, 1, 1))
 
         assert output == expected
 
