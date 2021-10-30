@@ -75,6 +75,7 @@ class TestGetCredentials:
         def mock_input(s):
             output.append(s)
             return input_values.pop(0)
+        src.helpers.validateMenuInput.input = mock_input
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.get_credentials(False)
@@ -85,12 +86,13 @@ class TestGetCredentials:
         ]
 
     def testRegisterIO(self):
-        input_values = ['randion', 'Password#1', 'Robby', 'YbboR']
+        input_values = ['randion', 'Password#1', 'Robby', 'YbboR', '1']
         output = []
 
         def mock_input(s):
             output.append(s)
             return input_values.pop(0)
+        src.helpers.validateMenuInput.input = mock_input
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.get_credentials(True)
@@ -100,6 +102,7 @@ class TestGetCredentials:
             'Enter password: ',
             'Enter first name: ',
             'Enter last name: ',
+            "1- Standard Tier\n2- Plus Tier\nEnter a choice: "
         ]
 
 
@@ -198,7 +201,7 @@ class TestRegisterLogin:
 class TestProfileControls:
     def SetUp(self):
         credentials = ("testuser", "Password1!",
-                       "Nathan", "Aldino")
+                       "Nathan", "Aldino", "Standard")
         create_user(credentials, db)
 
     def testProfilePrint(self):
@@ -251,9 +254,9 @@ class TestNetworkPage:
     def testSetUp(self):
         users = [
             ("darvelo", "Password1!",
-                "Daniel", "Arvelo"),
-            ("marvelo", "Password1!", "Maniel", "Arvelo"),
-            ("rarvelo", "Password1!", "Raniel", "Arvelo")
+                "Daniel", "Arvelo", "Standard"),
+            ("marvelo", "Password1!", "Maniel", "Arvelo", "Standard"),
+            ("rarvelo", "Password1!", "Raniel", "Arvelo", "Standard")
         ]
         for i in range(len(users)):
             user = create_user(users[i], db)
@@ -298,7 +301,7 @@ class TestNetworkPage:
         input_values = ['0']
         output = []
         credentials = ("garvelo", "Password1!",
-                       "Ganiel", "Arvelo")
+                       "Ganiel", "Arvelo", "Plus")
         self.page.user = create_user(credentials, db)
 
         def mock_input(s):
@@ -320,9 +323,9 @@ class TestFriends:
 
     def testSetup(self):
         self.page.user = create_user(
-            ("john", "Password1!", "John", "Smith"), db)
-        create_user(("mary", "Password1!", "Mary", "Smith"), db)
-        create_user(("eric", "Password1!", "eric", "smith"), db)
+            ("john", "Password1!", "John", "Smith", "Standard"), db)
+        create_user(("mary", "Password1!", "Mary", "Smith", "Standard"), db)
+        create_user(("eric", "Password1!", "eric", "smith", "Standard"), db)
 
         mary = getProfile("mary", db)
         mary.set_about_me("test about me", db)
@@ -398,7 +401,7 @@ class TestFriends:
 
 class TestJobPages:
     page = src.Page.Page()
-    page.user = User("darvelo", "", "", "", "", "", "", "", True, db)
+    page.user = User("darvelo", "", "", "", "Standard", "", "", "", "", True, db)
 
     def test_job_page_view_job_no_jobs(self):
         input_Page = ['1']

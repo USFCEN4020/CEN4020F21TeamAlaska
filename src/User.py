@@ -84,7 +84,7 @@ def get_user_by_username(username: str, db: Database) -> User:
         return None
 
 
-# Creates a user in the databsae
+# Creates a user in the database
 # credentials: [username, password, firstname, lastname]
 def create_user(credentials: tuple, db: Database) -> User:
     default_language = "english"
