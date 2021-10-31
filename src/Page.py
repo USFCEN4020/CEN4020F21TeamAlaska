@@ -584,9 +584,9 @@ class Page:
                 # get all users except self
                 people_to_message = get_all_usernames(self.user.username, db)
             for idx, person in enumerate(people_to_message):
-                print(f'{idx} - {person[0]}')
+                print(f'{idx + 1} - {person[0]}')
             c_person = validateMenuInput(len(people_to_message))
-            recipient = people_to_message[c_person][0]
+            recipient = people_to_message[c_person - 1][0]
             msg = input(f'Your message to {recipient}: ')
             Message.send_message(self.user.username, recipient, msg, db)
             self.back_option()

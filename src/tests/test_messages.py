@@ -24,16 +24,21 @@ def setup_module():
 
 
 class TestMessages:
-    u1 = create_user(('randion','Password#1','Robert',"Tester", "standard"), db)
-    u2 = create_user(('randionSquared','Password#1','Robert',"SquaredGfuelAddict", "plus"), db)
+    def setUp(self):
+        # create_user(('randion','Password#1','Robert',"Tester", "standard"), db)
+        # create_user(('randionSquared','Password#1','Robert',"SquaredGfuelAddict", "plus"), db)
+        pass
 
     def testSendMessageNonFriendPlus(self):
+        create_user(('randion','Password#1','Robert',"Tester", "standard"), db)
+        u2 = create_user(('randionSquared','Password#1','Robert',"SquaredGfuelAddict", "plus"), db)
+
         page = src.Page.Page()
-        page.user = self.u2
-        src.Page.back_option = lambda s: output.append('Done')
-        page.back_option = lambda s: output.append('Done')
+        page.user = u2
+        # src.Page.back_option = lambda s: output.append('Done {}'.format(s))
+        # page.back_option = lambda s: output.append('Done {}'.format(s))
         output = []
-        input = ["2","1","1"]
+        input = ["2","1","1","1"]
         def mock_input(s):
             return input.pop(0)
         src.Page.print = lambda s: output.append(s)
@@ -41,7 +46,10 @@ class TestMessages:
         src.helpers.input = mock_input
         page.messages_page()
         
-        assert output == []
+        assert output == [
+            "1 - Inbox\n2 - Send a message\n0 - Back to previous\nEnter a choice: ",
+            "1 - randion",
+        ]
     #        message.send_message('randion','randionSquared', "I love to test", db)
     def testSendMessage(self):
         print('qait')
