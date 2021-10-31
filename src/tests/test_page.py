@@ -466,12 +466,12 @@ class TestJobPages:
             "1 - Worm Farmer",
             "2 - Worm Farmer 2"
         ]
-        '''
         # -- TEST Job does not exist --
         input_Page = ['-1', '1']
         input_helpers = ['2']
         output = []
         src.Page.input = mock_input_Page
+        src.helpers.input = mock_input_helpers
         src.Page.print = lambda s: output.append(s)
 
         self.page.post_job_page()
@@ -484,7 +484,7 @@ class TestJobPages:
             "2 - Worm Farmer 2",
             "Job does not exist"
         ]
-    '''
+        
     def test_job_page_view_my_postings(self):
         # -- Setup --
 
