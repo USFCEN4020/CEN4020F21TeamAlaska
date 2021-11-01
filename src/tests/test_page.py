@@ -23,6 +23,7 @@ def setup_module():
 def resetFunctions():
     src.Page.input = input
     src.Page.print = print
+    src.helpers.input = input
 
 
 class TestIsPasswordSecure:
@@ -67,7 +68,7 @@ class TestIsPasswordSecure:
 
 class TestGetCredentials:
     page = src.Page.Page()
-
+    
     def testLoginIO(self):
         input_values = ['randion', 'Password#1']
         output = []
@@ -83,14 +84,15 @@ class TestGetCredentials:
             'Enter username: ',
             'Enter password: ',
         ]
-
+    
     def testRegisterIO(self):
-        input_values = ['randion', 'Password#1', 'Robby', 'YbboR']
+        input_values = ['randion', 'Password#1', 'Robby', 'YbboR', '1']
         output = []
 
         def mock_input(s):
             output.append(s)
             return input_values.pop(0)
+        src.helpers.input = mock_input
         src.Page.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.get_credentials(True)
@@ -100,9 +102,11 @@ class TestGetCredentials:
             'Enter password: ',
             'Enter first name: ',
             'Enter last name: ',
+            '1- Standard Tier\n2- Plus Tier\nEnter a choice: ',
+            ''
         ]
 
-
+    
 class TestRegisterLogin:
     page = src.Page.Page()
     db_name = "testing.sqlite3"
@@ -110,16 +114,18 @@ class TestRegisterLogin:
     src.Page.db = db
 
     def testUserRegistration(self):
-        input_values = ['randion', 'Password#1', 'Robby', 'Ybbor']
+        input_values = ['randion', 'Password#1', 'Robby', 'Ybbor', '1']
         output = []
 
         def mock_input(s):
             return input_values.pop(0)
         src.Page.input = mock_input
+        src.helpers.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.register()
         resetFunctions()
-        assert output == ["An account for randion was registered successfully"]
+        print(output)
+        assert output == ['1- Standard Tier\n2- Plus Tier\nEnter a choice: ', 'An account for randion was registered successfully']
 
     def testUserLoginCorrect(self):
         input_values = ['randion', 'Password#1']
@@ -159,17 +165,19 @@ class TestRegisterLogin:
         def mock_input(s):
             return input_values.pop(0)
         src.Page.input = mock_input
+        src.helpers.input = mock_input
         for i in range(0, 11):
             input_values = [
-                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i)]
+                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), '1']
             self.page.register()
         resetFunctions()
         output = []
-        input = ['TomSawyer', 'Passworrd#234', 'Tommy', "Sawyer"]
+        input = ['TomSawyer', 'Passworrd#234', 'Tommy', "Sawyer", '2']
 
         def mock_input(s):
             output.append(s)
         src.Page.input = mock_input
+        src.helpers.input = mock_input
         src.Page.print = lambda s: output.append(s)
         self.page.register()
         resetFunctions()
@@ -183,10 +191,10 @@ class TestRegisterLogin:
         self.db.print_users()
         src.database_access.print = print
         expected = [("randion", "Password#1", "Robby",
-                     "Ybbor", "english", 1, 1, 1)]
+                     "Ybbor", "standard", "english", 1, 1, 1)]
         for i in range(0, 9):
             expected.append((
-                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), "english", 1, 1, 1))
+                'randion' + str(i), 'Password#1' + str(i), 'Robby' + str(i), 'Ybbor' + str(i), "standard", "english", 1, 1, 1))
 
         assert output == expected
 
@@ -198,7 +206,7 @@ class TestRegisterLogin:
 class TestProfileControls:
     def SetUp(self):
         credentials = ("testuser", "Password1!",
-                       "Nathan", "Aldino")
+                       "Nathan", "Aldino", "standard")
         create_user(credentials, db)
 
     def testProfilePrint(self):
@@ -251,9 +259,9 @@ class TestNetworkPage:
     def testSetUp(self):
         users = [
             ("darvelo", "Password1!",
-                "Daniel", "Arvelo"),
-            ("marvelo", "Password1!", "Maniel", "Arvelo"),
-            ("rarvelo", "Password1!", "Raniel", "Arvelo")
+                "Daniel", "Arvelo", "Standard"),
+            ("marvelo", "Password1!", "Maniel", "Arvelo", "standard"),
+            ("rarvelo", "Password1!", "Raniel", "Arvelo", "standard")
         ]
         for i in range(len(users)):
             user = create_user(users[i], db)
@@ -298,7 +306,7 @@ class TestNetworkPage:
         input_values = ['0']
         output = []
         credentials = ("garvelo", "Password1!",
-                       "Ganiel", "Arvelo")
+                       "Ganiel", "Arvelo", "plus")
         self.page.user = create_user(credentials, db)
 
         def mock_input(s):
@@ -320,9 +328,9 @@ class TestFriends:
 
     def testSetup(self):
         self.page.user = create_user(
-            ("john", "Password1!", "John", "Smith"), db)
-        create_user(("mary", "Password1!", "Mary", "Smith"), db)
-        create_user(("eric", "Password1!", "eric", "smith"), db)
+            ("john", "Password1!", "John", "Smith", "standard"), db)
+        create_user(("mary", "Password1!", "Mary", "Smith", "standard"), db)
+        create_user(("eric", "Password1!", "eric", "smith", "standard"), db)
 
         mary = getProfile("mary", db)
         mary.set_about_me("test about me", db)
@@ -398,7 +406,7 @@ class TestFriends:
 
 class TestJobPages:
     page = src.Page.Page()
-    page.user = User("darvelo", "", "", "", "", "", "", "", True, db)
+    page.user = User("darvelo", "", "", "", "standard", "", "", "", "", True, db)
 
     def test_job_page_view_job_no_jobs(self):
         input_Page = ['1']
@@ -458,12 +466,12 @@ class TestJobPages:
             "1 - Worm Farmer",
             "2 - Worm Farmer 2"
         ]
-
         # -- TEST Job does not exist --
         input_Page = ['-1', '1']
         input_helpers = ['2']
         output = []
         src.Page.input = mock_input_Page
+        src.helpers.input = mock_input_helpers
         src.Page.print = lambda s: output.append(s)
 
         self.page.post_job_page()
@@ -476,7 +484,7 @@ class TestJobPages:
             "2 - Worm Farmer 2",
             "Job does not exist"
         ]
-
+        
     def test_job_page_view_my_postings(self):
         # -- Setup --
 
@@ -606,7 +614,7 @@ class TestJobPages:
     def test_job_page_view_my_postings_Zero(self):
         # -- Setup --
         self.page.user = User("NonExistentUser", "", "",
-                              "", "", "", "", "", True, db)
+                              "", "", "", "", "", "", True, db)
 
         def mock_input_Page(s):
             return input_Page.pop(0)

@@ -12,7 +12,7 @@ def data():
     # in case an error breaks the code before the Teardown is reached.
     db.delete_users_table()
     # Initializes a user object in the db before any test runs
-    credentials = ("darvelo", "password1!", "daniel", "arvelo")
+    credentials = ("darvelo", "password1!", "daniel", "arvelo", "standard")
     user = create_user(credentials, db)
 
     data = {"user": user, "db": db}
@@ -24,7 +24,7 @@ def data():
 
 
 def test_get_user_by_login(data):
-    expected = User("darvelo", "password1!", "daniel", "arvelo", "english",
+    expected = User("darvelo", "password1!", "daniel", "arvelo", "standard", "english",
                     True, True, True, True, data["db"])
     actual = get_user_by_login(
         expected.username, expected.password, expected.db)
@@ -32,7 +32,7 @@ def test_get_user_by_login(data):
 
 
 def test_get_user_by_username(data):
-    expected = User("darvelo", "password1!", "daniel", "arvelo", "english",
+    expected = User("darvelo", "password1!", "daniel", "arvelo", "standard", "english",
                     True, True, True, True, data["db"])
 
     actual = get_user_by_username(expected.username, expected.db)
@@ -41,10 +41,10 @@ def test_get_user_by_username(data):
 
 
 def test_create_user(data):
-    expected = User("randion", "Password1!", "robert", "andion", "english",
+    expected = User("randion", "Password1!", "robert", "andion", "plus", "english",
                     True, True, True, True, data["db"])
 
-    credentials = ("randion", "Password1!", "robert", "andion")
+    credentials = ("randion", "Password1!", "robert", "andion", "plus")
     actual = create_user(credentials, data["db"])
 
     assert actual == expected
@@ -55,7 +55,7 @@ def test_create_user(data):
 
 
 def test_authorize(data):
-    user = User("", "", "", "", "", False, False, False, False, data["db"])
+    user = User("", "", "", "", "", "",False, False, False, False, data["db"])
     # test before (input is False)
     assert user.authorized == False
     user.authorize()
