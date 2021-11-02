@@ -152,7 +152,6 @@ class Page:
             if c == 0:
                 print("Thank you for using InCollege!")
                 return 0
-            
 
     def useful_links_page(self):
         # select from links
@@ -399,6 +398,11 @@ class Page:
 
     def post_job_page(self):
         if self.user.authorized:
+            # Tell student how many jobs they have applied for
+            appliedJobs = Job.get_applied_jobs(self.user.username, db)
+            appliedJobsNumber = 0 if not appliedJobs else len(appliedJobs)
+            print("You have currently applied for {} jobs".format(appliedJobsNumber))
+
             print(
                 '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ')
             c = validateMenuInput(6)
@@ -428,9 +432,10 @@ class Page:
                     job = Job.get_job_by_id(c3, db)
                     if job:
                         job.print_full_job()
-                        favIntOther = input("\n1 - Apply\n2 - Interested\nAny Other key - Go Back")
+                        favIntOther = input(
+                            "\n1 - Apply\n2 - Interested\nAny Other key - Go Back")
                         if favIntOther == '1':
-                            Job.apply_job(self.user.username,job.id, db)
+                            Job.apply_job(self.user.username, job.id, db)
                         elif favIntOther == '2':
                             Job.add_interested(self.user.username, job.id, db)
                     else:
@@ -485,7 +490,6 @@ class Page:
                 else:
                     print("You are not interested in any jobs currently.\n")
                 self.back_page()
-
 
     def skills_page(self):
         skill = input(
@@ -562,7 +566,7 @@ class Page:
         elif option == '4':
             self.back_page()
 
-    ### MESSAGES
+    # MESSAGES
     def messages_page(self):
         # cur_user = self.user.username
         print("1 - Inbox\n2 - Send a message\n0 - Back to previous\nEnter a choice: ")
@@ -576,12 +580,14 @@ class Page:
             i = 1
             while len(messages) != 0:
                 for message in messages:
-                    print(i+f'Status:{message[4].capitalize()} {message[1]}: {message[3][0:10]}')
-                choice = input("Choose a message to read. Or choose 0 to leave inbox")
+                    print(
+                        i+f'Status:{message[4].capitalize()} {message[1]}: {message[3][0:10]}')
+                choice = input(
+                    "Choose a message to read. Or choose 0 to leave inbox")
                 if choice == 0:
                     break
                 else:
-                    self.view_message(messages,choice,self)
+                    self.view_message(messages, choice, self)
             self.back_option()
         if c == 2:
             self.page_stack.append(-1)
@@ -601,17 +607,18 @@ class Page:
             self.back_option()
     ###
     # message viewer
+
     def view_message(messages, selection, self):
         # update message from sent to read
         sql_update = '''
             UPDATE messages SET status = 'read' WHERE message_id = ?
         '''
-        db.execute(sql_update,messages[selection][0])
-        
-        #print message
+        db.execute(sql_update, messages[selection][0])
+
+        # print message
         print(f'{messages[selection][1]}: {messages[selection][3]}')
 
-        #options to reply, delete, or go back to inbox
+        # options to reply, delete, or go back to inbox
         choice = input("\n\n1 - Reply\n2 - Delete\n3 - Return to Inbox")
         if choice == 1:
             people_to_message = []
@@ -627,26 +634,28 @@ class Page:
             recipient = people_to_message[c_person][0]
             msg = input(f'Your message to {recipient}: ')
             Message.send_message(self.user.username, recipient, msg, db)
-            
+
             print("Message sent. Returning to Inbox...\n")
         if choice == 2:
             Message.delete_message(messages[selection][0])
             messages.remove(selection)
-            
+
             print("Message removed. Returning to Inbox...\n")
         if choice == 3:
             print("Returning to Inbox...\n")
     # pulls from database to see which messages are available
-    def notifyMessage(self,db):
+
+    def notifyMessage(self, db):
         sql_count_messasges = '''
             SELECT COUNT(*) FROM messages WHERE receiver = ? AND status = 'sent'
         '''
-        numMessage = db.execute(sql_count_messasges,[self.user.username])
+        numMessage = db.execute(sql_count_messasges, [self.user.username])
         if(numMessage >= 1):
-            print("You have " + numMessage + " new messages! Go to the messages tab to view.")
-            
+            print("You have " + numMessage +
+                  " new messages! Go to the messages tab to view.")
 
     # goes up a level to the previous page
+
     def back_page(self, args=[]):
         # call the function for the previous page
         self.page_stack.pop()
@@ -670,7 +679,8 @@ class Page:
             tier = validateMenuInput(2)
             tier = "plus" if tier == 2 else "standard"
             if tier == "plus":
-                fo = input('Total = $10\nEnter Credit Card Information (anything):')
+                fo = input(
+                    'Total = $10\nEnter Credit Card Information (anything):')
                 print("Thanks for your subscription!")
             return (user, password, firstname, lastname, tier)
         return (user, password)
