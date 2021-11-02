@@ -7,6 +7,7 @@ from src.PostedJob import PostedJob
 from Profile.Profile import *
 from src.message import *
 from src.helpers import validateMenuInput
+from src.Notification import *
 db = Database("InCollege.sqlite3")
 
 
@@ -118,8 +119,16 @@ class Page:
             self.pendingFriendRequests(db)
             # Show if new messages are in inbox, "new message" is defined as messages not read yet
             self.notifyMessage(db)
-            # Notify a suer if they haven't created a profile
+            # Notify a user if they haven't created a profile
             self.notifyCreateProfile()
+
+            # print every notification for a user, then delete
+            notifications = Notification.get_notifications(
+                self.user.username, db)
+            for notification in notifications:
+                print(notification[1] + "\n")
+            Notification.delete_notifications(self.user.username, db)
+
             c = -1
             print(
                 "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n0 - Exit\nEnter a choice: ")
@@ -713,7 +722,8 @@ class Page:
 
     def register(self):
         # checking the number of accounts already registered
-        num_accounts = len(db.execute('SELECT * FROM users'))
+        accounts = db.execute('SELECT * FROM users')
+        num_accounts = len(accounts)
         if int(num_accounts) >= 10:
             print("All permitted accounts have been created, please come backlater\n")
         else:
@@ -726,6 +736,12 @@ class Page:
                 self.user = create_user(cred, db)
                 print("An account for " +
                       cred[0] + " was registered successfully")
+
+                # Notify every existing user about new account
+                msg = "{} {} has joined InCollege".format(
+                    self.user.firstname, self.user.lastname)
+                for account in accounts:
+                    Notification.add_notification(account[0], msg, db)
                 return True
             else:
                 print('Weak Password')

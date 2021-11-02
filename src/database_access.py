@@ -99,6 +99,12 @@ class database_access:
                 FOREIGN KEY (receiver) REFERENCES users (username)
             )
         '''
+        sql_create_notifications_table = '''
+            CREATE TABLE IF NOT EXISTS notifications (
+                username text NOT NULL,
+                content text NOT NULL
+            )
+        '''
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
@@ -108,6 +114,7 @@ class database_access:
         c.execute(sql_create_user_interested_job)
         c.execute(sql_create_user_applied_job)
         c.execute(sql_create_messages_table)
+        c.execute(sql_create_notifications_table)
         self.db.commit()
 
     # To select and print all tables
