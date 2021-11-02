@@ -122,13 +122,6 @@ class Page:
             # Notify a user if they haven't created a profile
             self.notifyCreateProfile()
 
-            # print every notification for a user, then delete
-            notifications = Notification.get_notifications(
-                self.user.username, db)
-            for notification in notifications:
-                print(notification[1] + "\n")
-            Notification.delete_notifications(self.user.username, db)
-
             c = -1
             print(
                 "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n0 - Exit\nEnter a choice: ")
@@ -715,6 +708,13 @@ class Page:
                     print(
                         "Remember -- you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
                 user.set_last_login()
+
+                # print every notification for a user, then delete
+                notifications = Notification.get_notifications(
+                    self.user.username, db)
+                for notification in notifications:
+                    print(notification[1] + "\n")
+                Notification.delete_notifications(self.user.username, db)
                 return True
             else:
                 print('Incorrect username / password, please try again\n')
