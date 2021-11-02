@@ -15,7 +15,7 @@ class Page:
     def __init__(self):
         # current login info
         self.user = User("", "", "", "", "", "english",
-                         True, True, True, False, db)
+                         True, True, True, False, None, db)
         # stack is to implement the navigation functionality
         self.page_stack = [0]
         # Numbered pages so they're easily added to the stack and then called
@@ -702,6 +702,10 @@ class Page:
             if user:
                 self.user = user
                 print('You have successfully logged in\n')
+                if (datetime.datetime.now() - user.last_login).days > 7:
+                    print(
+                        "Remember -- you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
+                user.set_last_login()
                 return True
             else:
                 print('Incorrect username / password, please try again\n')

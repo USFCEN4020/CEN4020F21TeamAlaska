@@ -1,3 +1,4 @@
+import datetime
 from src.database_access import database_access as Database
 
 
@@ -13,6 +14,7 @@ class User:
         email_notification: bool,
         sms_notification: bool,
         ad_notification: bool,
+        last_login: datetime,
         authorized: bool,
         db: Database
     ):
@@ -25,6 +27,7 @@ class User:
         self.email_notification = email_notification
         self.sms_notification = sms_notification
         self.ad_notification = ad_notification
+        self.last_login = last_login
         self.db = db
         self.authorized = authorized  # To control the view
 
@@ -63,13 +66,18 @@ class User:
         sql = 'UPDATE users SET language = ? WHERE username = ?'
         self.db.execute(sql, [languageStr, self.username])
 
+    def set_last_login(self):
+        currentDate = datetime.datetime.now()
+        sql = 'UPDATE users SET last_login = ? WHERE username = ?'
+        self.db.execute(sql, [currentDate, self.username])
+
 
 def get_user_by_login(username: str, password: str, db: Database) -> User:
     find_user = 'SELECT * FROM users WHERE username = ? AND password = ?'
     res = db.execute(find_user, (username, password))
     if res:
         res = res[0]
-        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], True, db)
+        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], True, db)
     else:
         return None
 
@@ -79,7 +87,7 @@ def get_user_by_username(username: str, db: Database) -> User:
     res = db.execute(find_user, [username])
     if res:
         res = res[0]
-        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], True, db)
+        return User(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7], res[8], res[9], True, db)
     else:
         return None
 
@@ -88,14 +96,16 @@ def get_user_by_username(username: str, db: Database) -> User:
 # credentials: [username, password, firstname, lastname]
 def create_user(credentials: tuple, db: Database) -> User:
     default_language = "english"
-    db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-               credentials + (default_language, True, True, True))
+    currentTime = datetime.datetime.now()
+    db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+               credentials + (default_language, True, True, True, currentTime))
     return User(credentials[0], credentials[1], credentials[2],
-                credentials[3], credentials[4], default_language, True, True, True, True, db)
+                credentials[3], credentials[4], default_language, True, True, True, True, currentTime, db)
+
 
 def get_all_usernames(username: str, db: Database):
-        sql_for_all_users = '''
+    sql_for_all_users = '''
         SELECT username FROM users WHERE username != ?
         '''
-        res = db.execute(sql_for_all_users, [username])
-        return res
+    res = db.execute(sql_for_all_users, [username])
+    return res
