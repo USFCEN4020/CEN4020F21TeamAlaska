@@ -118,6 +118,8 @@ class Page:
             self.pendingFriendRequests(db)
             # Show if new messages are in inbox, "new message" is defined as messages not read yet
             self.notifyMessage(db)
+            # Notify a suer if they haven't created a profile
+            self.notifyCreateProfile()
             c = -1
             print(
                 "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n0 - Exit\nEnter a choice: ")
@@ -649,10 +651,17 @@ class Page:
         sql_count_messasges = '''
             SELECT COUNT(*) FROM messages WHERE receiver = ? AND status = 'sent'
         '''
-        numMessage = db.execute(sql_count_messasges, [self.user.username])
+        numMessage = db.execute(sql_count_messasges, [
+                                self.user.username])[0][0]
         if(numMessage >= 1):
             print("You have " + numMessage +
                   " new messages! Go to the messages tab to view.")
+
+    def notifyCreateProfile(self):
+        if self.user.authorized:
+            profile = getProfile(self.user.username, db)
+            if not profile.isComplete():
+                print("Don't forget to create a profile.\n")
 
     # goes up a level to the previous page
 
