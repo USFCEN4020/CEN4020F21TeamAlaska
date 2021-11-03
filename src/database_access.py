@@ -4,7 +4,8 @@ import sqlite3
 class database_access:
     # constructor establsihes connection and creates tables
     def __init__(self, db_name):
-        self.db = sqlite3.connect(db_name)
+        self.db = sqlite3.connect(
+            db_name,  detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
         sql_create_users_table = ''' CREATE TABLE IF NOT EXISTS users (
             username text PRIMARY KEY,
@@ -15,7 +16,8 @@ class database_access:
             language text NOT NULL,
             email_notification BOOLEAN NOT NULL,
             sms_notification BOOLEAN NOT NULL,
-            ad_notification BOOLEAN NOT NULL
+            ad_notification BOOLEAN NOT NULL,
+            last_login TIMESTAMP NOT NULL
         )
         '''
         sql_create_jobs_table = ''' CREATE TABLE IF NOT EXISTS jobs (
@@ -97,6 +99,12 @@ class database_access:
                 FOREIGN KEY (receiver) REFERENCES users (username)
             )
         '''
+        sql_create_notifications_table = '''
+            CREATE TABLE IF NOT EXISTS notifications (
+                username text NOT NULL,
+                content text NOT NULL
+            )
+        '''
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
@@ -106,6 +114,7 @@ class database_access:
         c.execute(sql_create_user_interested_job)
         c.execute(sql_create_user_applied_job)
         c.execute(sql_create_messages_table)
+        c.execute(sql_create_notifications_table)
         self.db.commit()
 
     # To select and print all tables
