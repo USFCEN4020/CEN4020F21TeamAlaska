@@ -1,5 +1,6 @@
 from re import subn
 from src.database_access import database_access
+from src.Notification import Notification
 
 
 class Job:
@@ -57,6 +58,15 @@ class Job:
         delete_query_string = '''
             DELETE FROM jobs WHERE job_id = ?
         '''
+        # alert all applicants that the job has been deleted
+        deletedjob = db.execute('SELECT * FROM jobs WHERE job_id = ?',[id])
+        content = "A job that you applied, " + deletedjob[2] + " for has been deleted"
+
+        allusers = db.execute('SELECT * FROM users_applied_jobs WHERE job_id = ?',[id])
+        for user in allusers:
+            Notification.add_notification(user[0],content)
+
+        # delete job
         check_string = 'SELECT COUNT(*) FROM jobs WHERE job_id = ?;'
         db.execute(delete_query_string, [id])
         # checking if the delete was successful
