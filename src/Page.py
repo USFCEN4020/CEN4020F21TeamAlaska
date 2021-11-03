@@ -397,6 +397,12 @@ class Page:
             db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)', [
                 temp.name, temp.title, temp.description, temp.employer, temp.location, temp.salary])
 
+            # set alert all users that a new job has been posted
+            allusers = db.execute('SELECT * FROM users')
+            content = "A new job, " + temp.title + " has been posted"
+            for user in allusers:
+                Notification.add_notification(user[0],content)
+
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
 
