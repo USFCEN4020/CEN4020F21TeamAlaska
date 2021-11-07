@@ -401,17 +401,20 @@ class Page:
             allusers = db.execute('SELECT * FROM users')
             content = "A new job, " + temp.title + " has been posted"
             for user in allusers:
-                Notification.add_notification(user[0],content)
+                Notification.add_notification(user[0],content, db)
 
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
 
+    def notify_jobs_applied(self):
+        appliedJobs = Job.get_applied_jobs(self.user.username, db)
+        appliedJobsNumber = 0 if not appliedJobs else len(appliedJobs)
+        print("You have currently applied for {} jobs".format(appliedJobsNumber))
+
     def post_job_page(self):
         if self.user.authorized:
             # Tell student how many jobs they have applied for
-            appliedJobs = Job.get_applied_jobs(self.user.username, db)
-            appliedJobsNumber = 0 if not appliedJobs else len(appliedJobs)
-            print("You have currently applied for {} jobs".format(appliedJobsNumber))
+            self.notify_jobs_applied()
 
             print(
                 '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ')
@@ -662,7 +665,7 @@ class Page:
         numMessage = db.execute(sql_count_messasges, [
                                 self.user.username])[0][0]
         if(numMessage >= 1):
-            print("You have " + numMessage +
+            print("You have " + str(numMessage) +
                   " new messages! Go to the messages tab to view.")
 
     def notifyCreateProfile(self):

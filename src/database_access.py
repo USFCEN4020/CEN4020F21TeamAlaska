@@ -222,6 +222,12 @@ class database_access:
         sql = 'DELETE FROM messages'
         c.execute(sql)
         self.db.commit()
+    
+    def delete_notifications(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM notifications'
+        c.execute(sql)
+        self.db.commit()
 
     def execute(self, sql, params=[]):
         c = self.db.cursor()
