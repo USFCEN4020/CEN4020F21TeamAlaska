@@ -83,6 +83,12 @@ class Page:
             },
             19: {
                 "view": self.messages_page
+            },
+            20: {
+                "view": self.training_page
+            },
+            21: {
+                "view": self.in_college_learning_page
             }
         }
 
@@ -91,8 +97,8 @@ class Page:
         if not self.user.authorized:
             c = -1
             print("Welcome to InCollege: *** Where you're no longer going to be broke ***\nAll of our broke students managed to find job!!!"
-                  "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\n7 - Exit\nEnter a choice: ")
-            c = validateMenuInput(7)
+                  "\n\n1 - Play Video\n2 - People you may know\n3 - Register\n4 - Login\n5 - Useful Links\n6 - InCollege Important Links\n7 - Training\n8 - Exit\nEnter a choice: ")
+            c = validateMenuInput(8)
             if c == 1:
                 self.page_stack.append(1)
                 self.play_video_page()
@@ -112,6 +118,9 @@ class Page:
                 self.page_stack.append(9)
                 self.important_links_page()
             if c == 7:
+                self.page_stack.append(20)
+                self.training_page()
+            if c == 8:
                 print("Thank you for using InCollege!")
                 return 0
         else:
@@ -124,8 +133,8 @@ class Page:
 
             c = -1
             print(
-                "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n0 - Exit\nEnter a choice: ")
-            c = validateMenuInput(10)
+                "1 - Job Menu\n2 - Find people you may know\n3 - learn a new skill\n4 - Useful Links\n5 - InCollege Important Links\n6 - Profile\n7 - Add Friend\n8 - Network\n9 - Messages\n10 - InCollege Learning\n0 - Exit\nEnter a choice: ")
+            c = validateMenuInput(11)
             if c == 1:
                 self.page_stack.append(5)
                 self.post_job_page()
@@ -153,9 +162,52 @@ class Page:
             if c == 9:
                 self.page_stack.append(19)
                 self.messages_page()
+            if c== 10:
+                self.page_stack.append(21)
+                self.in_college_learning_page()
             if c == 0:
                 print("Thank you for using InCollege!")
                 return 0
+
+    def training_page(self):
+        print("1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back")
+        response = validateMenuInput(4)
+        if response == 1:
+            print("1 - Learn Python\n2 - Learn React\n3 - Public Speaking 101\n4 - SCRUM basics")
+            response = validateMenuInput(5)
+            print("Under Construction.")
+            self.back_option()
+        if response == 2:
+            print("Coming soon!")
+            self.back_option()
+        if response == 3:
+            print("1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Not seeing what you're looking for? Sign in to see all 7,609 results.")
+            response == validateMenuInput(4)
+            print("Please Login")
+            self.login_page()
+        if response == 3:
+            print("WIP")
+        if response == 5:
+            print("Coming soon!")
+            self.back_option()
+        if response == 5:
+            self.back_option()
+        
+    def in_college_learning_page(self): # Marking of taken courses will be needed thus the workflow will change a bit.
+        print("1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Understanding the Architectural Design Process\n5 - Project Management Simplified\n6 - Go back")
+        response = validateMenuInput(6)
+        if response == 1:
+            print("WIP")
+        elif response == 2:
+            print("WIP")
+        elif response == 3:
+            print("WIP")
+        elif response == 4:
+            print("WIP")
+        elif response == 5:
+            print("WIP")
+        elif response == 6:
+            self.back_option()
 
     def useful_links_page(self):
         # select from links
