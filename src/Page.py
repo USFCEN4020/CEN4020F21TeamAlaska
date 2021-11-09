@@ -190,7 +190,7 @@ class Page:
         if response == 5:
             print("Coming soon!")
             self.back_option()
-        if response == 5:
+        if response == 6:
             self.back_option()
         
     def in_college_learning_page(self): # Marking of taken courses will be needed thus the workflow will change a bit.
