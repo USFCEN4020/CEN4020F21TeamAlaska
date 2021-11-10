@@ -105,6 +105,19 @@ class database_access:
                 content text NOT NULL
             )
         '''
+        sql_create_course_table = '''
+            CREATE TABLE IF NOT EXISTS courses (
+                title text NOT NULL
+            )
+        '''
+        # courses assosiated to a student
+        sql_create_student_courses_table = '''
+            CREATE TABLE IF NOT EXISTS student_courses (
+                username text NOT NULL,
+                title text NOT NULL,
+                status text NOT NULL
+            )
+        '''
         c = self.db.cursor()
         c.execute(sql_create_users_table)
         c.execute(sql_create_jobs_table)
@@ -115,6 +128,24 @@ class database_access:
         c.execute(sql_create_user_applied_job)
         c.execute(sql_create_messages_table)
         c.execute(sql_create_notifications_table)
+        c.execute(sql_create_course_table)
+        c.execute(sql_create_student_courses_table)
+
+        # Add default courses
+        existingCoursesSQL = "SELECT title FROM courses;"
+        existingCourses = self.db.execute(existingCoursesSQL).fetchall()
+        if existingCourses == []:
+            defaultCourses = [
+                "How to use InCollege learning",
+                "Train the trainer",
+                "Gamification of learning",
+                "Understanding the Architectural Design Process",
+                "Project Management Simplified"
+            ]
+            addNewCourseSQL = "INSERT INTO courses VALUES (?);"
+            for course in defaultCourses:
+                self.db.execute(addNewCourseSQL, [course])
+
         self.db.commit()
 
     # To select and print all tables
@@ -222,7 +253,7 @@ class database_access:
         sql = 'DELETE FROM messages'
         c.execute(sql)
         self.db.commit()
-    
+
     def delete_notifications(self):
         c = self.db.cursor()
         sql = 'DELETE FROM notifications'
