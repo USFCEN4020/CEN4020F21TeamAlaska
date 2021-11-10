@@ -115,7 +115,7 @@ class database_access:
             CREATE TABLE IF NOT EXISTS student_courses (
                 username text NOT NULL,
                 title text NOT NULL,
-                status text NOT NULL
+                completed BOOLEAN NOT NULL
             )
         '''
         c = self.db.cursor()
@@ -257,6 +257,18 @@ class database_access:
     def delete_notifications(self):
         c = self.db.cursor()
         sql = 'DELETE FROM notifications'
+        c.execute(sql)
+        self.db.commit()
+
+    def delete_courses(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM courses'
+        c.execute(sql)
+        self.db.commit()
+
+    def delete_student_courses(self):
+        c = self.db.cursor()
+        sql = 'DELETE FROM student_courses'
         c.execute(sql)
         self.db.commit()
 

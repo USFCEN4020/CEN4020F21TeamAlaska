@@ -1,4 +1,5 @@
 import re
+from src.Course import Course
 from src.Job import Job
 from src.database_access import database_access as Database
 from src.JobExperience import *
@@ -162,7 +163,7 @@ class Page:
             if c == 9:
                 self.page_stack.append(19)
                 self.messages_page()
-            if c== 10:
+            if c == 10:
                 self.page_stack.append(21)
                 self.in_college_learning_page()
             if c == 0:
@@ -173,7 +174,8 @@ class Page:
         print("1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back")
         response = validateMenuInput(4)
         if response == 1:
-            print("1 - Learn Python\n2 - Learn React\n3 - Public Speaking 101\n4 - SCRUM basics")
+            print(
+                "1 - Learn Python\n2 - Learn React\n3 - Public Speaking 101\n4 - SCRUM basics")
             response = validateMenuInput(5)
             print("Under Construction.")
             self.back_option()
@@ -192,22 +194,40 @@ class Page:
             self.back_option()
         if response == 6:
             self.back_option()
-        
-    def in_college_learning_page(self): # Marking of taken courses will be needed thus the workflow will change a bit.
-        print("1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Understanding the Architectural Design Process\n5 - Project Management Simplified\n6 - Go back")
-        response = validateMenuInput(6)
-        if response == 1:
-            print("WIP")
-        elif response == 2:
-            print("WIP")
-        elif response == 3:
-            print("WIP")
-        elif response == 4:
-            print("WIP")
-        elif response == 5:
-            print("WIP")
-        elif response == 6:
-            self.back_option()
+
+    # Marking of taken courses will be needed thus the workflow will change a bit.
+    def in_college_learning_page(self):
+        courses = Course.getAllCourseTitles(db)
+        menu = "Pick any of the courses below to enroll:\n"
+        for i, course in enumerate(courses):
+            menu += "{} - {}".format(i+1, course[0])
+            completed = Course.getCourseStatus(
+                self.user.username, course[0], db)
+            if completed:
+                menu += " (COMPLETED)"
+            menu += "\n"
+        menu += "{} - Go Back".format(len(courses) + 1)
+        print(menu)
+        response = validateMenuInput(len(courses) + 1)
+        if response == len(courses) + 1:
+            self.back_page()
+        else:
+            completed = Course.getCourseStatus(
+                self.user.username, courses[response - 1][0], db)
+            # Student has not taken course
+            if not completed:
+                print("You have now completed this training.")
+                Course.setCourseStatus(
+                    self.user.username, courses[response - 1][0], True, db)
+            else:
+                print(
+                    "You have already taken this course, do you want to take it again?\n1 - yes\n2 - no")
+                retakeCourseResponse = validateMenuInput(2)
+                if retakeCourseResponse == 1:
+                    print("You have now completed this training")
+                else:
+                    print("Course Cancelled")
+            self.in_college_learning_page()
 
     def useful_links_page(self):
         # select from links
@@ -453,7 +473,7 @@ class Page:
             allusers = db.execute('SELECT * FROM users')
             content = "A new job, " + temp.title + " has been posted"
             for user in allusers:
-                Notification.add_notification(user[0],content, db)
+                Notification.add_notification(user[0], content, db)
 
             print("Thanks your job was posted! Returning to the previous menu...")
             return True
