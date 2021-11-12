@@ -642,6 +642,70 @@ class TestJobPages:
     def cleanUp(self):
         db.delete_jobs_table()
 
+class TestTrainingPage:
+    page = src.Page.Page()
+
+    def trainingandeducation(self):
+        input = ['1']
+        output = []
+
+        def mock_input(s):
+            return input.pop(0)
+        src.Page.input = mock_input
+        src.page.print = lambda s: output.append(s)
+        self.page.training_page
+        resetFunctions()
+        assert output == [
+            "1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back",
+            "1 - Learn Python\n2 - Learn React\n3 - Public Speaking 101\n4 - SCRUM basics",
+            "Under Construction."
+        ]
+    
+    def ITandsecurity(self):
+        input = ['2']
+        output = []
+
+        def mock_input(s):
+            return input.pop(0)
+        src.Page.input = mock_input
+        src.page.print = lambda s: output.append(s)
+        self.page.training_page
+        resetFunctions()
+        assert output == [
+            "1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back",
+            "Coming soon!"
+        ]
+    
+    def business(self):
+        input = ['3','4']
+        output = []
+
+        def mock_input(s):
+            return input.pop(0)
+        src.Page.input = mock_input
+        src.page.print = lambda s: output.append(s)
+        self.page.training_page
+        resetFunctions()
+        assert output == [
+            "1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back",
+            "1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Not seeing what you're looking for? Sign in to see all 7,609 results.",
+            'Enter username: ',
+        ]
+
+    def incollegetraining(self):
+        input = []
+        output = []
+
+        def mock_input(s):
+            return input.pop(0)
+        src.Page.input = mock_input
+        src.page.print = lambda s: output.append(s)
+        self.page.in_college_learning_page
+        resetFunctions()
+        assert output == [
+            "Pick any of the courses below to enroll:\n",
+            "1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Understanding the Architectural Design Process\n5 - Project Management Simplified\n6 - Go Back"
+        ]
 
 # Runs after every test in this file has finished running
 def teardown_module():
