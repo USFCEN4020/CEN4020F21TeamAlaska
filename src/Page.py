@@ -172,14 +172,14 @@ class Page:
 
     def training_page(self):
         print("1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back")
-        response = validateMenuInput(4)
+        response = validateMenuInput(5)
         if response == 1:
             print(
                 "1 - Learn Python\n2 - Learn React\n3 - Public Speaking 101\n4 - SCRUM basics")
-            response = validateMenuInput(5)
+            response = validateMenuInput(4)
             print("Under Construction.")
             self.back_option()
-        if response == 2:
+        if response == 2 or 4:
             print("Coming soon!")
             self.back_option()
         if response == 3:
@@ -187,12 +187,7 @@ class Page:
             response == validateMenuInput(4)
             print("Please Login")
             self.login_page()
-        if response == 3:
-            print("WIP")
         if response == 5:
-            print("Coming soon!")
-            self.back_option()
-        if response == 6:
             self.back_option()
 
     # Marking of taken courses will be needed thus the workflow will change a bit.
