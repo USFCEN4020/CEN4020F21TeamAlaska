@@ -5,6 +5,7 @@ from Profile.Profile import *
 from src.Page import *
 import src.helpers
 import src.Job
+from src.Course import Course
 
 
 # Does initial setup before any test runs
@@ -18,6 +19,7 @@ def setup_module():
     db.delete_job_experience_table()
     db.delete_user_interested()
     db.delete_user_applied()
+    db.delete_courses()
 
 
 def resetFunctions():
@@ -706,6 +708,19 @@ class TestTrainingPage:
             "Pick any of the courses below to enroll:\n",
             "1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Understanding the Architectural Design Process\n5 - Project Management Simplified\n6 - Go Back"
         ]
+        
+    def test_add_courses(self):
+        Course.setCourseStatus(self.page.user.username, "Software Dev", False)
+        queryString = "SELECT * FROM student_courses WHERE username = ? AND title = ?"
+        res = db.execute(queryString, [self.page.user.username, "Software Dev"])
+        assert len(res) > 0
+        
+    def test_update_status(self):
+        Course.setCourseStatus(self.page.user.username, "Software Engineer", False)
+        Course.setCourseStatus(self.page.user.username, "Software Engineer", True)
+        queryString = "SELECT * FROM student_courses WHERE username = ? AND title = ?"
+        res = db.execute(queryString, [self.page.user.username, "Software Engineer"])
+        assert res[0][2] == True
 
 # Runs after every test in this file has finished running
 def teardown_module():
