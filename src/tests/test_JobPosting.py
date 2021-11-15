@@ -17,7 +17,6 @@ class TestJobPosting():
     src.Page.db = db
 
     def clearTables(self):
-        self.db.delete_jobs_table()
         self.db.delete_user_applied()
         self.db.delete_user_interested()
 

@@ -637,7 +637,7 @@ class TestJobPages:
     def test_job_page_view_my_postings_Zero(self):
         # -- Setup --
         self.page.user = User("NonExistentUser", "", "",
-                              "", "", "", "", "", "", True, db)
+                              "", "", "", "", "", "", None, True, db)
 
         def mock_input_Page(s):
             return input_Page.pop(0)
@@ -658,13 +658,10 @@ class TestJobPages:
 
         resetFunctions()
         assert output == [
-            "You have currently applied for 1 jobs",
+            "You have currently applied for 0 jobs",
             '1 - Post a New Job\n2 - View Jobs\n3 - My Postings\n4 - View applications\n5 - View interested\n6 - Previous page\nEnter a choice: ',
             "You don't have any postings at the moment",
         ]
-
-    def cleanUp(self):
-        db.delete_jobs_table()
 
 
 class TestTrainingPage:
@@ -733,7 +730,8 @@ class TestTrainingPage:
         ]
 
     def test_add_courses(self):
-        Course.setCourseStatus(self.page.user.username, "Software Dev", False)
+        Course.setCourseStatus(self.page.user.username,
+                               "Software Dev", False, db)
         queryString = "SELECT * FROM student_courses WHERE username = ? AND title = ?"
         res = db.execute(
             queryString, [self.page.user.username, "Software Dev"])
@@ -741,9 +739,9 @@ class TestTrainingPage:
 
     def test_update_status(self):
         Course.setCourseStatus(self.page.user.username,
-                               "Software Engineer", False)
+                               "Software Engineer", False, db)
         Course.setCourseStatus(self.page.user.username,
-                               "Software Engineer", True)
+                               "Software Engineer", True, db)
         queryString = "SELECT * FROM student_courses WHERE username = ? AND title = ?"
         res = db.execute(
             queryString, [self.page.user.username, "Software Engineer"])
@@ -761,5 +759,4 @@ def teardown_module():
     db.delete_jobs_table()
     db.delete_user_applied()
     db.delete_user_interested()
-    db.delete_jobs_table()
     db.close()
