@@ -21,6 +21,7 @@ def setup_module():
     db.delete_job_experience_table()
     db.delete_user_interested()
     db.delete_user_applied()
+    db.delete_notifications()
     db.delete_courses()
 
 
@@ -147,15 +148,6 @@ class TestRegisterLogin:
             'Enter username: ',
             'Enter password: ',
             "You have successfully logged in\n",
-            'Robby0 Ybbor0 has joined InCollege\n',
-            'Robby1 Ybbor1 has joined InCollege\n',
-            'Robby2 Ybbor2 has joined InCollege\n',
-            'Robby3 Ybbor3 has joined InCollege\n',
-            'Robby4 Ybbor4 has joined InCollege\n',
-            'Robby5 Ybbor5 has joined InCollege\n',
-            'Robby6 Ybbor6 has joined InCollege\n',
-            'Robby7 Ybbor7 has joined InCollege\n',
-            'Robby8 Ybbor8 has joined InCollege\n',
         ]
 
     def testUserLoginIncorrect(self):
@@ -759,4 +751,5 @@ def teardown_module():
     db.delete_jobs_table()
     db.delete_user_applied()
     db.delete_user_interested()
+    db.delete_notifications()
     db.close()

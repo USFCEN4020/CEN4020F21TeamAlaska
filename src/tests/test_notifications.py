@@ -13,14 +13,28 @@ def resetFunctions():
     src.Page.input = input
     src.Page.print = print
 
+# Does initial setup before any test runs
+
+
+def setup_module():
+    global db
+    db = Database("testing.sqlite3-notifications")
+    src.Page.db = db
+    db.delete_profile_table()
+    db.delete_users_table()
+    db.delete_user_friends()
+    db.delete_job_experience_table()
+    db.delete_user_interested()
+    db.delete_user_applied()
+    db.delete_notifications()
+    db.delete_courses()
+    create_user(('Jirudi', 'Dana123$', 'dana', "jirudi", "standard"), db)
+
 
 class Test_notifications():
-    db = Database("testing.sqlite3-notifications")
     page = src.Page.Page()
     page.user.username = "Jirudi"
     page.user.authorized = True
-    src.Page.db = db
-    create_user(('Jirudi', 'Dana123$', 'dana', "jirudi", "standard"), db)
 
     def test_post_job_notification(self):
         temp = ['Awesome Dev', 'Dev Job', 'Me', 'Here', '100000']
@@ -36,7 +50,7 @@ class Test_notifications():
 
         sql = 'SELECT * FROM notifications WHERE username = ?'
         expected_res = ("Jirudi", "A new job, " + title + " has been posted")
-        res = self.db.execute(sql, [self.page.user.username])[0]
+        res = db.execute(sql, [self.page.user.username])[0]
         assert res == expected_res
 
     def test_profile_notification(self):
@@ -55,11 +69,11 @@ class Test_notifications():
         sql_post_messages_string = '''
             INSERT INTO messages (sender, receiver, body) VALUES (?, ?, ?)
         '''
-        self.db.execute(sql_post_messages_string, [
-                        "foo", self.page.user.username, "Hello World!"])
+        db.execute(sql_post_messages_string, [
+            "foo", self.page.user.username, "Hello World!"])
         output = []
         src.Page.print = lambda s: output.append(s)
-        self.page.notifyMessage(self.db)
+        self.page.notifyMessage(db)
         assert output == [
             "You have 1 new messages! Go to the messages tab to view."]
 
