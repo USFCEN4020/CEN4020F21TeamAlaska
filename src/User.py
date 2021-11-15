@@ -100,7 +100,7 @@ def create_user(credentials: tuple, db: Database) -> User:
     db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                credentials + (default_language, True, True, True, currentTime))
     return User(credentials[0], credentials[1], credentials[2],
-                credentials[3], credentials[4], default_language, True, True, True, True, currentTime, db)
+                credentials[3], credentials[4], default_language, True, True, True, currentTime, True, db)
 
 
 def get_all_usernames(username: str, db: Database):

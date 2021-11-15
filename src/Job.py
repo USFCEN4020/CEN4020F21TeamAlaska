@@ -59,12 +59,14 @@ class Job:
             DELETE FROM jobs WHERE job_id = ?
         '''
         # alert all applicants that the job has been deleted
-        deletedjob = db.execute('SELECT * FROM jobs WHERE job_id = ?',[id])
-        content = "A job that you applied, " + deletedjob[2] + " for has been deleted"
+        deletedjob = db.execute('SELECT * FROM jobs WHERE job_id = ?', [id])
+        content = "A job that you applied, " + \
+            deletedjob[0][2] + " for has been deleted"
 
-        allusers = db.execute('SELECT * FROM users_applied_jobs WHERE job_id = ?',[id])
+        allusers = db.execute(
+            'SELECT * FROM user_applied_jobs WHERE job_id = ?', [id])
         for user in allusers:
-            Notification.add_notification(user[0],content)
+            Notification.add_notification(user[0], content, db)
 
         # delete job
         check_string = 'SELECT COUNT(*) FROM jobs WHERE job_id = ?;'

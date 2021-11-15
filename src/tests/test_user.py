@@ -1,4 +1,5 @@
 import pytest
+import datetime
 from src.User import *
 
 
@@ -25,7 +26,7 @@ def data():
 
 def test_get_user_by_login(data):
     expected = User("darvelo", "password1!", "daniel", "arvelo", "standard", "english",
-                    True, True, True, True, data["db"])
+                    True, True, True, None, True, data["db"])
     actual = get_user_by_login(
         expected.username, expected.password, expected.db)
     assert actual == expected
@@ -33,7 +34,7 @@ def test_get_user_by_login(data):
 
 def test_get_user_by_username(data):
     expected = User("darvelo", "password1!", "daniel", "arvelo", "standard", "english",
-                    True, True, True, True, data["db"])
+                    True, True, True, None, True, data["db"])
 
     actual = get_user_by_username(expected.username, expected.db)
 
@@ -42,7 +43,7 @@ def test_get_user_by_username(data):
 
 def test_create_user(data):
     expected = User("randion", "Password1!", "robert", "andion", "plus", "english",
-                    True, True, True, True, data["db"])
+                    True, True, True, None, True, data["db"])
 
     credentials = ("randion", "Password1!", "robert", "andion", "plus")
     actual = create_user(credentials, data["db"])
@@ -55,7 +56,8 @@ def test_create_user(data):
 
 
 def test_authorize(data):
-    user = User("", "", "", "", "", "",False, False, False, False, data["db"])
+    user = User("", "", "", "", "", "", False, False,
+                False, None, False, data["db"])
     # test before (input is False)
     assert user.authorized == False
     user.authorize()
