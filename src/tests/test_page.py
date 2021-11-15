@@ -1,3 +1,5 @@
+import datetime
+
 import src.Page
 import src.database_access
 from src.User import *
@@ -70,7 +72,7 @@ class TestIsPasswordSecure:
 
 class TestGetCredentials:
     page = src.Page.Page()
-    
+
     def testLoginIO(self):
         input_values = ['randion', 'Password#1']
         output = []
@@ -86,7 +88,7 @@ class TestGetCredentials:
             'Enter username: ',
             'Enter password: ',
         ]
-    
+
     def testRegisterIO(self):
         input_values = ['randion', 'Password#1', 'Robby', 'YbboR', '1']
         output = []
@@ -108,7 +110,7 @@ class TestGetCredentials:
             ''
         ]
 
-    
+
 class TestRegisterLogin:
     page = src.Page.Page()
     db_name = "testing.sqlite3"
@@ -127,7 +129,8 @@ class TestRegisterLogin:
         self.page.register()
         resetFunctions()
         print(output)
-        assert output == ['1- Standard Tier\n2- Plus Tier\nEnter a choice: ', 'An account for randion was registered successfully']
+        assert output == ['1- Standard Tier\n2- Plus Tier\nEnter a choice: ',
+                          'An account for randion was registered successfully']
 
     def testUserLoginCorrect(self):
         input_values = ['randion', 'Password#1']
@@ -408,7 +411,8 @@ class TestFriends:
 
 class TestJobPages:
     page = src.Page.Page()
-    page.user = User("darvelo", "", "", "", "standard", "", "", "", "", True, db)
+    page.user = User("darvelo", "", "", "", "standard", "", "",
+                     "", "", datetime.datetime.now(), True, db)
 
     def test_job_page_view_job_no_jobs(self):
         input_Page = ['1']
@@ -486,7 +490,7 @@ class TestJobPages:
             "2 - Worm Farmer 2",
             "Job does not exist"
         ]
-        
+
     def test_job_page_view_my_postings(self):
         # -- Setup --
 
@@ -644,6 +648,7 @@ class TestJobPages:
     def cleanUp(self):
         db.delete_jobs_table()
 
+
 class TestTrainingPage:
     page = src.Page.Page()
 
@@ -662,7 +667,7 @@ class TestTrainingPage:
             "1 - Learn Python\n2 - Learn React\n3 - Public Speaking 101\n4 - SCRUM basics",
             "Under Construction."
         ]
-    
+
     def ITandsecurity(self):
         input = ['2']
         output = []
@@ -677,9 +682,9 @@ class TestTrainingPage:
             "1 - Training and Education\n2 - IT Help Desk\n3 - Business Analysis and Strategy\n4 - Security\n5 - Go back",
             "Coming soon!"
         ]
-    
+
     def business(self):
-        input = ['3','4']
+        input = ['3', '4']
         output = []
 
         def mock_input(s):
@@ -708,21 +713,27 @@ class TestTrainingPage:
             "Pick any of the courses below to enroll:\n",
             "1 - How to use InCollege learning\n2 - Train the trainer\n3 - Gamification of learning\n4 - Understanding the Architectural Design Process\n5 - Project Management Simplified\n6 - Go Back"
         ]
-        
+
     def test_add_courses(self):
         Course.setCourseStatus(self.page.user.username, "Software Dev", False)
         queryString = "SELECT * FROM student_courses WHERE username = ? AND title = ?"
-        res = db.execute(queryString, [self.page.user.username, "Software Dev"])
+        res = db.execute(
+            queryString, [self.page.user.username, "Software Dev"])
         assert len(res) > 0
-        
+
     def test_update_status(self):
-        Course.setCourseStatus(self.page.user.username, "Software Engineer", False)
-        Course.setCourseStatus(self.page.user.username, "Software Engineer", True)
+        Course.setCourseStatus(self.page.user.username,
+                               "Software Engineer", False)
+        Course.setCourseStatus(self.page.user.username,
+                               "Software Engineer", True)
         queryString = "SELECT * FROM student_courses WHERE username = ? AND title = ?"
-        res = db.execute(queryString, [self.page.user.username, "Software Engineer"])
+        res = db.execute(
+            queryString, [self.page.user.username, "Software Engineer"])
         assert res[0][2] == True
 
 # Runs after every test in this file has finished running
+
+
 def teardown_module():
     db = Database('testing.sqlite3')
     db.delete_profile_table()
