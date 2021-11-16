@@ -9,8 +9,17 @@ from Profile.Profile import *
 from src.message import *
 from src.helpers import validateMenuInput
 from src.Notification import *
+import src.api as RSquared
 db = Database("InCollege.sqlite3")
-
+RSquared.jobInput(db)
+RSquared.studentInput(db)
+RSquared.trainingInput(db)
+RSquared.appliedJobsOutput(db)
+RSquared.profileOutput(db)
+RSquared.savedJobsOutput(db)
+RSquared.studentOutput(db)
+RSquared.trainingOutput(db)
+RSquared.jobOutput(db)
 
 class Page:
     # each page will "render" the appropriate "form" or prompt
@@ -515,7 +524,8 @@ class Page:
                         favIntOther = input(
                             "\n1 - Apply\n2 - Interested\nAny Other key - Go Back")
                         if favIntOther == '1':
-                            Job.apply_job(self.user.username, job.id, db)
+                            reason = input("Please enter your qualifications for this job or why you fit the position.\n")
+                            Job.apply_job(self.user.username, job.id, reason, db)
                         elif favIntOther == '2':
                             Job.add_interested(self.user.username, job.id, db)
                     else:

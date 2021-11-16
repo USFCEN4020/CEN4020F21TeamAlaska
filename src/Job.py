@@ -76,11 +76,11 @@ class Job:
         return True if res[0][0] == 0 else False
 
     @staticmethod
-    def apply_job(username, job_id, db: database_access):
+    def apply_job(username, job_id, reason, db: database_access):
         apply_job_sql = '''
-        INSERT INTO user_applied_jobs VALUES (?,?,?)
+        INSERT INTO user_applied_jobs VALUES (?,?,?,?)
         '''
-        db.execute(apply_job_sql, [username, job_id, 'Applied'])
+        db.execute(apply_job_sql, [username, job_id, reason, 'Applied'])
 
     @staticmethod
     def add_interested(username, job_id, db: database_access):
