@@ -41,7 +41,6 @@ def trainingInput(db: Database):
         training.append(line.replace('\n',''))
     # Function for inserting trainings will go here
     courses = db.execute("SELECT title FROM courses")
-    print(courses)
     for i in range(0, 10 - len(courses)):
         if (i >= len(trainings)):
             break
@@ -111,7 +110,6 @@ def profileOutput(db: Database):
     
     output = ''
     for profile in package:
-        print(profile)
         output += profile[0] + '\n'
         if profile[1]:
             output += profile[1] + '\n' # Title
