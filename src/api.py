@@ -95,8 +95,7 @@ def jobOutput(db: Database):
 def profileOutput(db: Database):
     file = open('./src/API-Files/MyCollege_profiles.txt', 'w')
     package = db.execute("SELECT * FROM profile")
-    print(package)
-
+    
     output = ''
     for profile in package:
         output += profile[1] + '\n' # Title
@@ -104,6 +103,14 @@ def profileOutput(db: Database):
         output += profile[3] + '\n' # Uni
         output += profile[4] + '\n' # About Me
         # Logic for getting experience if applicable, execute call here.
+        res = db.execute("SELECT * FROM job_experience WHERE username = ?",[profile[0]])
+        for experience in res:
+            output += experience[1] + '\n'
+            output += experience[2] + '\n'
+            output += experience[3] + '\n'
+            output += experience[4] + '\n'
+            output += experience[5] + '\n'
+            output += experience[6] + '\n'
         output += profile[5] + '\n' # Education
         output += '====='
 
