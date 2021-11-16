@@ -40,6 +40,18 @@ def trainingInput(db: Database):
             continue
         training.append(line.replace('\n',''))
     # Function for inserting trainings will go here
+    courses = db.execute("SELECT title FROM courses")
+    print(courses)
+    for i in range(0, 10 - len(courses)):
+        if (i >= len(trainings)):
+            break
+        if trainings[i][0] in str(courses):
+            continue
+        try:
+            db.execute("INSERT INTO courses(title) VALUES(?)",[trainings[i][0]])
+        except:
+            pass
+
 
 def jobInput(db: Database):
     if not os.path.exists('./src/API-Files/newJobs.txt'):

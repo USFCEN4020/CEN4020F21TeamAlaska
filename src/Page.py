@@ -223,6 +223,7 @@ class Page:
                 print("You have now completed this training.")
                 Course.setCourseStatus(
                     self.user.username, courses[response - 1][0], True, db)
+                RSquared.trainingOutput(db)
             else:
                 print(
                     "You have already taken this course, do you want to take it again?\n1 - yes\n2 - no")
@@ -526,8 +527,10 @@ class Page:
                         if favIntOther == '1':
                             reason = input("Please enter your qualifications for this job or why you fit the position.\n")
                             Job.apply_job(self.user.username, job.id, reason, db)
+                            RSquared.appliedJobsOutput(db)
                         elif favIntOther == '2':
                             Job.add_interested(self.user.username, job.id, db)
+                            RSquared.savedJobsOutput(db)
                     else:
                         print('Job does not exist')
                     self.back_option()
@@ -822,6 +825,7 @@ class Page:
                 self.user = create_user(cred, db)
                 print("An account for " +
                       cred[0] + " was registered successfully")
+                RSquared.studentOutput(db)
 
                 # Notify every existing user about new account
                 msg = "{} {} has joined InCollege".format(
@@ -883,26 +887,32 @@ class Page:
         if c == 1:
             title_input = input("Enter your title: ")
             profile.set_title(title_input, db)
+            RSquared.profileOutput(db)
         # major
         elif c == 2:
             major_input = input("Enter your major: ")
             profile.set_major(major_input, db)
+            RSquared.profileOutput(db)
         # university name
         elif c == 3:
             university_name_input = input("Enter your university's name: ")
             profile.set_university_name(university_name_input, db)
+            RSquared.profileOutput(db)
         # about me
         elif c == 4:
             about_me_input = input("Enter your about me: ")
             profile.set_about_me(about_me_input, db)
+            RSquared.profileOutput(db)
         # education
         elif c == 5:
             education_input = input("Enter your education: ")
             profile.set_education(education_input, db)
+            RSquared.profileOutput(db)
         elif c == 6:
             experiences = getJobInformation(self.user.username, db)
             if len(experiences) < 3:
                 self.addJobExperiencePage()
+                RSquared.profileOutput(db)
             else:
                 print("Cannot add more than 3 experiences")
         # If the user just completed their profile, send them to profile screen
@@ -912,6 +922,7 @@ class Page:
 
         if c in range(1, 7):
             self.editProfilePage(profile, db)
+            RSquared.profileOutput(db)
 
     def addJobExperiencePage(self):
         title = input("job title: ")

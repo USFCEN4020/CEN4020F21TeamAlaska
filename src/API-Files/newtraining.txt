@@ -1,6 +1,4 @@
 Name of my training
-This training will...
 =====
-Name of my training
-This training will...
+Name of my training Two
 =====
