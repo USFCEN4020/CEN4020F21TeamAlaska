@@ -2,10 +2,11 @@ import os
 import src.User as User
 import src.database_access as Database
 
+apiFilePath = "./src/API-Files/"
 def studentInput(db: Database):
-    if not os.path.exists('./src/API-Files/studentAccounts.txt'):
+    if not os.path.exists('{}studentAccounts.txt'.format(apiFilePath)):
         return None
-    file = open('./src/API-Files/studentAccounts.txt')
+    file = open('{}studentAccounts.txt'.format(apiFilePath))
     students = []
     student = []
     for line in file:
@@ -17,7 +18,7 @@ def studentInput(db: Database):
             student.append(item.replace('\n',''))
     
     # Insertion time, check for amount and do calculamations
-    count = len(db.execute('SELECT * FROM jobs'))
+    count = len(db.execute('SELECT * FROM users'))
     for i in range(0,10 - count):
         if (i >= len(students)):
             break
@@ -28,9 +29,9 @@ def studentInput(db: Database):
         # This will auto catch duplicate usernames so we dont need to check here.
     
 def trainingInput(db: Database):
-    if not os.path.exists('./src/API-Files/newtraining.txt'):
+    if not os.path.exists('{}newtraining.txt'.format(apiFilePath)):
         return None
-    file = open('./src/API-Files/newtraining.txt')
+    file = open('{}newtraining.txt'.format(apiFilePath))
     trainings = []
     training = []
     for line in file:
@@ -53,9 +54,9 @@ def trainingInput(db: Database):
 
 
 def jobInput(db: Database):
-    if not os.path.exists('./src/API-Files/newJobs.txt'):
+    if not os.path.exists('{}newJobs.txt'.format(apiFilePath)):
         return None
-    file = open('./src/API-Files/newJobs.txt')
+    file = open('{}newJobs.txt'.format(apiFilePath))
     jobs = []
     job = []
     for line in file:
@@ -92,7 +93,7 @@ def jobInput(db: Database):
 def jobOutput(db: Database):
     package = db.execute("SELECT * FROM jobs")
     #  title, a description, the employer, a location, and a salary.
-    file = open('./src/API-Files/MyCollege_jobs.txt', 'w')
+    file = open('{}MyCollege_jobs.txt'.format(apiFilePath), 'w')
     output = ''
     for job in package:
         output += job[2] + '\n'
@@ -105,7 +106,7 @@ def jobOutput(db: Database):
     file.write(output)
 
 def profileOutput(db: Database):
-    file = open('./src/API-Files/MyCollege_profiles.txt', 'w')
+    file = open('{}MyCollege_profiles.txt'.format(apiFilePath), 'w')
     package = db.execute("SELECT * FROM profile")
     
     output = ''
@@ -135,7 +136,7 @@ def profileOutput(db: Database):
     file.write(output)
 
 def studentOutput(db: Database):
-    file = open('./src/API-Files/MyCollege_users.txt', 'w')
+    file = open('{}MyCollege_users.txt'.format(apiFilePath), 'w')
     package = db.execute("SELECT username,tier FROM users")
     output = ""
     for user in package:
@@ -143,7 +144,7 @@ def studentOutput(db: Database):
     file.write(output)
 
 def trainingOutput(db: Database):
-    file = open('./src/API-Files/MyCollege_training.txt', 'w')
+    file = open('{}MyCollege_training.txt'.format(apiFilePath), 'w')
     package = db.execute("SELECT username FROM users")
     output = ""
     for user in package:
@@ -155,7 +156,7 @@ def trainingOutput(db: Database):
     file.write(output)
 
 def appliedJobsOutput(db: Database):
-    file = open('./src/API-Files/MyCollege_appliedJobs.txt', 'w')
+    file = open('{}MyCollege_appliedJobs.txt'.format(apiFilePath), 'w')
     package = db.execute("SELECT title, job_id FROM jobs")
     output = ""
     for job in package:
@@ -169,7 +170,7 @@ def appliedJobsOutput(db: Database):
     file.write(output)
 
 def savedJobsOutput(db: Database):
-    file = open('./src/API-Files/MyCollege_savedJobs.txt', 'w')
+    file = open('{}MyCollege_savedJobs.txt'.format(apiFilePath), 'w')
     package = db.execute("SELECT username FROM users")
     output = ""
     for user in package:
