@@ -142,7 +142,7 @@ class TestJobPosting():
         assert src.Job.Job.get_applied_jobs("darvelo", self.db) == False
 
         # Test applied job has new item
-        src.Job.Job.apply_job("darvelo", 2, self.db)
+        src.Job.Job.apply_job("darvelo", 2, "some reason", self.db)
         assert src.Job.Job.get_applied_jobs("darvelo", self.db) == [
             src.Job.Job.get_job_by_id(2, self.db)]
 

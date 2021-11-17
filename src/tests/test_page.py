@@ -530,7 +530,7 @@ class TestJobPages:
             return input_helpers.pop(0)
         src.helpers.input = mock_input_helpers
 
-        src.Job.Job.apply_job("darvelo", 1, db)
+        src.Job.Job.apply_job("darvelo", 1, "some reason", db)
 
         # -- end setup --
         input_helpers = ['4']
