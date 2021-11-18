@@ -19,3 +19,5 @@ epic4.sqlite3
 testing.sqlite3-messages
 
 *.sqlite*
+
+/src/API-Files/*.txt
