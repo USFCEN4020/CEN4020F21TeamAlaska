@@ -2,8 +2,13 @@ import src.database_access
 import src.User
 import src.api
 import src.PostedJob
+import src.Course
+
+from os.path import exists
 
 # Does initial setup before any test runs
+
+apiFilePathTests = "./src/API-Files/testing/"
 
 
 def setup_module():
@@ -19,7 +24,6 @@ def setup_module():
     db.delete_notifications()
     db.delete_courses()
 
-    apiFilePathTests = "./src/API-Files/testing/"
     src.api.apiFilePath = apiFilePathTests
 
     # create test file for student input
@@ -38,6 +42,12 @@ def setup_module():
         f.write("employerName{}\n".format(i))
         f.write("location{}\n".format(i))
         f.write("{}\n".format(i*1000))
+        f.write("=====\n")
+
+    # Create test file for training input
+    f = open("{}newtraining.txt".format(apiFilePathTests), "w")
+    for i in range(5):
+        f.write("title{}\n".format(i))
         f.write("=====\n")
 
 
@@ -88,13 +98,41 @@ def test_job_input():
             i*1000
         )
 
-        print(job)
         assert job[0] == expected[0]
         assert job[1] == expected[1]
         assert job[2] == expected[2]
         assert job[3] == expected[3]
         assert job[4] == expected[4]
         assert job[5] == expected[5]
+
+
+def test_training_input():
+    src.api.trainingInput(db)
+
+    trainings = src.Course.Course.getAllCourseTitles(db)
+
+    assert len(trainings) == 5
+
+    for i, training in enumerate(trainings):
+        expected = "title{}".format(i)
+
+        assert training[0] == expected
+
+
+def test_user_output():
+    src.api.studentOutput(db)
+
+    # assert file was created
+    filename = "{}MyCollege_users.txt".format(apiFilePathTests)
+    assert exists(filename) == True
+
+    usernames = src.User.get_all_usernames("", db)
+
+    with open(filename) as f:
+        lines = f.readlines()
+
+        for i, line in enumerate(lines):
+            assert line == "{} {}\n".format(usernames[i][0], "standard")
 
 
 def teardown_module():
@@ -106,4 +144,5 @@ def teardown_module():
     db.delete_user_applied()
     db.delete_user_interested()
     db.delete_notifications()
+    db.delete_courses()
     db.close()
