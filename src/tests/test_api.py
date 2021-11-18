@@ -135,6 +135,34 @@ def test_user_output():
             assert line == "{} {}\n".format(usernames[i][0], "standard")
 
 
+def test_training_output():
+    src.api.trainingOutput(db)
+
+    # assert file was created
+    filename = "{}MyCollege_training.txt".format(apiFilePathTests)
+    assert exists(filename) == True
+
+    with open(filename) as f:
+        lines = f.readlines()
+
+        users = []
+        setUser = True
+        for line in lines:
+            if setUser:
+                user = line[:-1]
+                users.append(user)
+                setUser = False
+            elif line == "=====\n":
+                setUser = True
+            else:
+                assert src.Course.Course.getCourseStatus(
+                    user, line[:-1], db)[0][0] == True
+
+        # Check that all users are accounted for
+        print(users)
+        assert len(users) == len(src.User.get_all_usernames("", db))
+
+
 def teardown_module():
     db.delete_profile_table()
     db.delete_users_table()
