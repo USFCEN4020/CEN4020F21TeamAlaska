@@ -50,18 +50,6 @@ def setup_module():
         f.write("title{}\n".format(i))
         f.write("=====\n")
 
-    # create test profile in database for profile output
-    db.execute("INSERT INTO profile(username,title,major,university_name,about_me,education) VALUES(?,?,?,?,?,?)",['nathan1','title1','major1','uni1','mememe','eduroam'])
-
-    # create test job in database for job output
-    db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)',['nathan1','tester','teststhings','anderson','usf', 2])
-
-    # create test applied job in database for appliedjob output
-    db.execute('INSERT INTO user_applied_jobs(username,job_id,reason,status) VALUES (?,?,?,?)',['nathan1',0,'because','yes'])
-
-    # create test saved job in database for savedjob output
-    db.execute('INSERT INTO user_interested_jobs(username,job_id) VALUES(?,?)',['nathan1',0])
-
 def test_student_accounts_input():
     src.api.studentInput(db)
 
@@ -173,6 +161,30 @@ def test_training_output():
         print(users)
         assert len(users) == len(src.User.get_all_usernames("", db))
 
+def resetforNathanTest():
+    db.delete_profile_table()
+    db.delete_users_table()
+    db.delete_user_friends()
+    db.delete_job_experience_table()
+    db.delete_user_interested()
+    db.delete_user_applied()
+    db.delete_notifications()
+    db.delete_courses()
+    
+    # create test profile in database for profile output
+    db.execute("INSERT INTO profile(username,title,major,university_name,about_me,education) VALUES(?,?,?,?,?,?)",['nathan1','title1','major1','uni1','mememe','eduroam'])
+
+    # create test job in database for job output
+    db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)',['nathan1','tester','teststhings','anderson','usf', 2])
+
+    # create test applied job in database for appliedjob output
+    db.execute('INSERT INTO user_applied_jobs(username,job_id,reason,status) VALUES (?,?,?,?)',['nathan1',0,'because','yes'])
+
+    # create test saved job in database for savedjob output
+    db.execute('INSERT INTO user_interested_jobs(username,job_id) VALUES(?,?)',['nathan1',0])
+
+    assert True
+
 def test_profiles_output():
     src.api.profileOutput(db)
 
@@ -184,7 +196,7 @@ def test_profiles_output():
         correctprofile = db.execute("SELECT * FROM profile")
 
         for i in range(6):
-            assert testfile[i] == correctprofile[i] + '\n'
+            assert testfile[i] == correctprofile[0][i] + '\n'
 
 
 def test_job_output():
@@ -198,12 +210,12 @@ def test_job_output():
         correctjob = db.execute("SELECT * FROM jobs")
 
         for i in range(2,6):
-            assert testfile[i] == correctjob[i] + '\n'
+            assert testfile[i] == correctjob[0][i] + '\n'
         else:
-            assert testfile[6] == str(correctjob[6]) + '\n'
+            assert testfile[6] == str(correctjob[0][6]) + '\n'
 
 def test_appliedjobs():
-    src.api.appliedJobsOutput()
+    src.api.appliedJobsOutput(db)
 
     filename = "{}MyCollege_appliedJobs.txt".format(apiFilePathTests)
     assert exists(filename) ==  True
@@ -213,13 +225,13 @@ def test_appliedjobs():
         correctjob = db.execute("SELECT title, job_id FROM jobs")
         correctappliedjob = db.execute("SELECT * FROM users_applied_jobs WHERE job_id = ?", [correctjob[1]])
         
-        assert testfile[0] == correctjob[0] + '\n'
-        assert testfile[1] == correctappliedjob[0] + '\n'
-        assert testfile[2] == correctappliedjob[2] + '\n'
+        assert testfile[0] == correctjob[0][0] + '\n'
+        assert testfile[1] == correctappliedjob[0][0] + '\n'
+        assert testfile[2] == correctappliedjob[0][2] + '\n'
         
 
 def test_savedjobs():
-    src.api.savedJobsOutput()
+    src.api.savedJobsOutput(db)
 
     filename = "{}MyCollege_savedJobs.txt".format(apiFilePathTests)
     assert exists(filename) ==  True
@@ -230,7 +242,7 @@ def test_savedjobs():
         correctsavedjobs = db.execute("SELECT job_id FROM user_interested_jobs WHERE username = ?", [correctuser[0]])
         correctjobname = db.execute("SELECT title FROM jobs WHERE job_id = ?", [correctsavedjobs[0]])
         
-        assert testfile[0] == correctuser[0] + '\n'
+        assert testfile[0] == correctuser[0][0] + '\n'
         assert testfile[1] == correctjobname[0][0] + '\n'
                 
 
