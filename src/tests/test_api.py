@@ -160,7 +160,6 @@ def test_training_output():
                     user, line[:-1], db)[0][0] == True
 
         # Check that all users are accounted for
-        print(users)
         assert len(users) == len(src.User.get_all_usernames("", db))
 
 # def resetforNathanTest():
@@ -212,7 +211,6 @@ def test_profiles_output():
                 user = db.execute(
                     "SELECT * FROM profile WHERE username = ?", [line[:-1]])[0]
                 setUser = False
-                print(user)
                 profileIDX = 0
             elif line == "=====\n":
                 setUser = True
@@ -229,15 +227,27 @@ def test_job_output():
 
     with open(filename) as f:
         testfile = f.readlines()
-        correctjob = db.execute("SELECT * FROM jobs")
+        jobs = db.execute("SELECT * FROM jobs")
 
-        for i in range(2, 6):
-            assert testfile[i] == correctjob[0][i] + '\n'
-        else:
-            assert testfile[6] == str(correctjob[0][6]) + '\n'
+        # TODO: this uses the poster name, not the employer name
+        jobIdx = 0
+        elemIdx = 2
+        for line in testfile:
+            if line == "=====\n":
+                jobIdx += 1
+                elemIdx = 2
+            else:
+                assert line[:-1] == str(jobs[jobIdx][elemIdx])
+                elemIdx += 1
 
 
 def test_appliedjobs():
+    # create applied jobs
+    for i in range(5):
+        db.execute('INSERT INTO user_applied_jobs(username,job_id,reason,status) VALUES (?,?,?,?)', [
+                   'nathan{}'.format(i), i, 'because', 'yes'])
+        db.execute('INSERT INTO user_applied_jobs(username,job_id,reason,status) VALUES (?,?,?,?)', [
+                   'darvelo{}'.format(i), i, 'because', 'yes'])
     src.api.appliedJobsOutput(db)
 
     filename = "{}MyCollege_appliedJobs.txt".format(apiFilePathTests)
@@ -245,13 +255,23 @@ def test_appliedjobs():
 
     with open(filename) as f:
         testfile = f.readlines()
-        correctjob = db.execute("SELECT title, job_id FROM jobs")
-        correctappliedjob = db.execute(
-            "SELECT * FROM users_applied_jobs WHERE job_id = ?", [correctjob[1]])
-
-        assert testfile[0] == correctjob[0][0] + '\n'
-        assert testfile[1] == correctappliedjob[0][0] + '\n'
-        assert testfile[2] == correctappliedjob[0][2] + '\n'
+        getJob = True
+        userIdx = 0
+        elemIdx = 0
+        for line in testfile:
+            if getJob:
+                job = db.execute(
+                    "SELECT title, UJ.username, reason FROM user_applied_jobs UJ, jobs J WHERE J.title = ? AND UJ.job_id = J.job_id", [line[:-1]])
+                getJob = False
+            elif line == "=====\n":
+                elemIdx = 0
+                getJob = True
+                userIdx = 0
+            else:
+                assert line[:-1] == job[userIdx][elemIdx % 2 + 1]
+                if elemIdx % 2 + 1 == 2:
+                    userIdx += 1
+                elemIdx += 1
 
 
 def test_savedjobs():
