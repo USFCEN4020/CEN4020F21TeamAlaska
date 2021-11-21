@@ -71,7 +71,7 @@ class database_access:
             CREATE TABLE IF NOT EXISTS user_interested_jobs (
             username text NOT NULL,
             job_id integer NOT NULL,
-            PRIMARY KEY (username),
+            PRIMARY KEY (username, job_id),
             FOREIGN KEY (username) REFERENCES users (username),
             FOREIGN KEY (job_id) REFERENCES jobs (job_id)
             )

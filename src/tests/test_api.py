@@ -275,6 +275,12 @@ def test_appliedjobs():
 
 
 def test_savedjobs():
+    # save jobs
+    for i in range(1, 5):
+        db.execute('INSERT INTO user_interested_jobs VALUES(?,?)', [
+                   'darvelo{}'.format(i+1), i])
+        db.execute('INSERT INTO user_interested_jobs VALUES(?,?)', [
+                   'darvelo1', i])
     src.api.savedJobsOutput(db)
 
     filename = "{}MyCollege_savedJobs.txt".format(apiFilePathTests)
@@ -282,14 +288,21 @@ def test_savedjobs():
 
     with open(filename) as f:
         testfile = f.readlines()
-        correctuser = db.execute("SELECT username FROM users")
-        correctsavedjobs = db.execute(
-            "SELECT job_id FROM user_interested_jobs WHERE username = ?", [correctuser[0]])
-        correctjobname = db.execute(
-            "SELECT title FROM jobs WHERE job_id = ?", [correctsavedjobs[0]])
 
-        assert testfile[0] == correctuser[0][0] + '\n'
-        assert testfile[1] == correctjobname[0][0] + '\n'
+        newUser = True
+        idx = 0
+        for line in testfile:
+            if newUser:
+                savedJobs = db.execute(
+                    "SELECT title FROM user_interested_jobs UI, jobs J WHERE UI.username = ? AND UI.job_id = J.job_id", [line[:-1]])
+                print(savedJobs)
+                newUser = False
+            elif line == "=====\n":
+                newUser = True
+                idx = 0
+            else:
+                assert line[:-1] == savedJobs[idx][0]
+                idx += 1
 
 
 def teardown_module():
