@@ -1,3 +1,4 @@
+import Profile.Profile
 import src.database_access
 import src.User
 import src.api
@@ -49,6 +50,7 @@ def setup_module():
     for i in range(5):
         f.write("title{}\n".format(i))
         f.write("=====\n")
+
 
 def test_student_accounts_input():
     src.api.studentInput(db)
@@ -161,90 +163,114 @@ def test_training_output():
         print(users)
         assert len(users) == len(src.User.get_all_usernames("", db))
 
-def resetforNathanTest():
-    db.delete_profile_table()
-    db.delete_users_table()
-    db.delete_user_friends()
-    db.delete_job_experience_table()
-    db.delete_user_interested()
-    db.delete_user_applied()
-    db.delete_notifications()
-    db.delete_courses()
-    
-    # create test profile in database for profile output
-    db.execute("INSERT INTO profile(username,title,major,university_name,about_me,education) VALUES(?,?,?,?,?,?)",['nathan1','title1','major1','uni1','mememe','eduroam'])
+# def resetforNathanTest():
+#     db.delete_profile_table()
+#     db.delete_users_table()
+#     db.delete_user_friends()
+#     db.delete_job_experience_table()
+#     db.delete_user_interested()
+#     db.delete_user_applied()
+#     db.delete_notifications()
+#     db.delete_courses()
 
-    # create test job in database for job output
-    db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)',['nathan1','tester','teststhings','anderson','usf', 2])
+#     # create test profile in database for profile output
+#     db.execute("INSERT INTO profile(username,title,major,university_name,about_me,education) VALUES(?,?,?,?,?,?)",['nathan1','title1','major1','uni1','mememe','eduroam'])
 
-    # create test applied job in database for appliedjob output
-    db.execute('INSERT INTO user_applied_jobs(username,job_id,reason,status) VALUES (?,?,?,?)',['nathan1',0,'because','yes'])
+#     # create test job in database for job output
+#     db.execute('INSERT INTO jobs(username, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)',['nathan1','tester','teststhings','anderson','usf', 2])
 
-    # create test saved job in database for savedjob output
-    db.execute('INSERT INTO user_interested_jobs(username,job_id) VALUES(?,?)',['nathan1',0])
+#     # create test applied job in database for appliedjob output
+#     db.execute('INSERT INTO user_applied_jobs(username,job_id,reason,status) VALUES (?,?,?,?)',['nathan1',0,'because','yes'])
 
-    assert True
+#     # create test saved job in database for savedjob output
+#     db.execute('INSERT INTO user_interested_jobs(username,job_id) VALUES(?,?)',['nathan1',0])
+
+#     assert True
+
 
 def test_profiles_output():
+    # create profiles
+    usernames = src.User.get_all_usernames("", db)
+    for i, username in enumerate(usernames):
+        values = [username[0], "title{}".format(i), "major{}".format(
+            i), "university{}".format(i), "about{}".format(i), "education{}".format(i)]
+        db.execute("INSERT INTO profile VALUES (?, ?, ?, ?, ?, ?)", values)
+
     src.api.profileOutput(db)
 
     filename = "{}MyCollege_profiles.txt".format(apiFilePathTests)
-    assert exists(filename) ==  True
+    assert exists(filename) == True
 
     with open(filename) as f:
         testfile = f.readlines()
-        correctprofile = db.execute("SELECT * FROM profile")
 
-        for i in range(6):
-            assert testfile[i] == correctprofile[0][i] + '\n'
+        setUser = True
+        user = None
+        profileIDX = 0
+        for i, line in enumerate(testfile):
+            if setUser:
+                user = db.execute(
+                    "SELECT * FROM profile WHERE username = ?", [line[:-1]])[0]
+                setUser = False
+                print(user)
+                profileIDX = 0
+            elif line == "=====\n":
+                setUser = True
+            else:
+                profileIDX += 1
+                assert line[:-1] == user[profileIDX]
 
 
 def test_job_output():
     src.api.jobOutput(db)
 
     filename = "{}MyCollege_jobs.txt".format(apiFilePathTests)
-    assert exists(filename) ==  True
+    assert exists(filename) == True
 
     with open(filename) as f:
         testfile = f.readlines()
         correctjob = db.execute("SELECT * FROM jobs")
 
-        for i in range(2,6):
+        for i in range(2, 6):
             assert testfile[i] == correctjob[0][i] + '\n'
         else:
             assert testfile[6] == str(correctjob[0][6]) + '\n'
+
 
 def test_appliedjobs():
     src.api.appliedJobsOutput(db)
 
     filename = "{}MyCollege_appliedJobs.txt".format(apiFilePathTests)
-    assert exists(filename) ==  True
+    assert exists(filename) == True
 
     with open(filename) as f:
         testfile = f.readlines()
         correctjob = db.execute("SELECT title, job_id FROM jobs")
-        correctappliedjob = db.execute("SELECT * FROM users_applied_jobs WHERE job_id = ?", [correctjob[1]])
-        
+        correctappliedjob = db.execute(
+            "SELECT * FROM users_applied_jobs WHERE job_id = ?", [correctjob[1]])
+
         assert testfile[0] == correctjob[0][0] + '\n'
         assert testfile[1] == correctappliedjob[0][0] + '\n'
         assert testfile[2] == correctappliedjob[0][2] + '\n'
-        
+
 
 def test_savedjobs():
     src.api.savedJobsOutput(db)
 
     filename = "{}MyCollege_savedJobs.txt".format(apiFilePathTests)
-    assert exists(filename) ==  True
+    assert exists(filename) == True
 
     with open(filename) as f:
         testfile = f.readlines()
         correctuser = db.execute("SELECT username FROM users")
-        correctsavedjobs = db.execute("SELECT job_id FROM user_interested_jobs WHERE username = ?", [correctuser[0]])
-        correctjobname = db.execute("SELECT title FROM jobs WHERE job_id = ?", [correctsavedjobs[0]])
-        
+        correctsavedjobs = db.execute(
+            "SELECT job_id FROM user_interested_jobs WHERE username = ?", [correctuser[0]])
+        correctjobname = db.execute(
+            "SELECT title FROM jobs WHERE job_id = ?", [correctsavedjobs[0]])
+
         assert testfile[0] == correctuser[0][0] + '\n'
         assert testfile[1] == correctjobname[0][0] + '\n'
-                
+
 
 def teardown_module():
     db.delete_profile_table()
